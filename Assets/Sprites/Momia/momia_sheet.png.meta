@@ -1,0 +1,1913 @@
+fileFormatVersion: 2
+guid: b5a5ef0fea39b084cac5c775b3787b3e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -192672021757987311
+    second: momia_sheet_0
+  - first:
+      213: 4104132485173766470
+    second: momia_sheet_1
+  - first:
+      213: 8916442140985263766
+    second: momia_sheet_2
+  - first:
+      213: -916825744879480522
+    second: momia_sheet_3
+  - first:
+      213: 4990783319393444265
+    second: momia_sheet_4
+  - first:
+      213: -1917089759860855171
+    second: momia_sheet_5
+  - first:
+      213: -4972167360216052903
+    second: momia_sheet_6
+  - first:
+      213: -4257050998832369020
+    second: momia_sheet_7
+  - first:
+      213: 7794374757589088780
+    second: momia_sheet_8
+  - first:
+      213: 768341066388269934
+    second: momia_sheet_9
+  - first:
+      213: -8199451817004434731
+    second: momia_sheet_10
+  - first:
+      213: -8535643371679663660
+    second: momia_sheet_11
+  - first:
+      213: 4549481970551726816
+    second: momia_sheet_12
+  - first:
+      213: -5287023412585542025
+    second: momia_sheet_13
+  - first:
+      213: 8199068551498957715
+    second: momia_sheet_14
+  - first:
+      213: 4851002641107742267
+    second: momia_sheet_15
+  - first:
+      213: -6300921347776787243
+    second: momia_sheet_16
+  - first:
+      213: -6543790700383622782
+    second: momia_sheet_17
+  - first:
+      213: 7300223691839385232
+    second: momia_sheet_18
+  - first:
+      213: 376643368216256137
+    second: momia_sheet_19
+  - first:
+      213: -2034111779019327012
+    second: momia_sheet_20
+  - first:
+      213: 6927802814896643769
+    second: momia_sheet_21
+  - first:
+      213: -1848236611549860066
+    second: momia_sheet_22
+  - first:
+      213: 2319303813029157836
+    second: momia_sheet_23
+  - first:
+      213: -9123692835139719597
+    second: momia_sheet_24
+  - first:
+      213: 3750563935818010894
+    second: momia_sheet_25
+  - first:
+      213: -4215006772906938343
+    second: momia_sheet_26
+  - first:
+      213: 5964139923696012375
+    second: momia_sheet_27
+  - first:
+      213: -5772431619795299332
+    second: momia_sheet_28
+  - first:
+      213: -406659603216845568
+    second: momia_sheet_29
+  - first:
+      213: -2523211422505725823
+    second: momia_sheet_30
+  - first:
+      213: -8030970808238722764
+    second: momia_sheet_31
+  - first:
+      213: -2141255401827535535
+    second: momia_sheet_32
+  - first:
+      213: -5577895910616332883
+    second: momia_sheet_33
+  - first:
+      213: 4799832065768486515
+    second: momia_sheet_34
+  - first:
+      213: 7294287476709436344
+    second: momia_sheet_35
+  - first:
+      213: 2820941274992552335
+    second: momia_sheet_36
+  - first:
+      213: -614419424617767550
+    second: momia_sheet_37
+  - first:
+      213: 3071177950049815373
+    second: momia_sheet_38
+  - first:
+      213: 2006276776043640626
+    second: momia_sheet_39
+  - first:
+      213: 145412486172036837
+    second: momia_sheet_40
+  - first:
+      213: -4545765193876550762
+    second: momia_sheet_41
+  - first:
+      213: -3955466384507669895
+    second: momia_sheet_42
+  - first:
+      213: -7589560397174401839
+    second: momia_sheet_43
+  - first:
+      213: 1421949018057511434
+    second: momia_sheet_44
+  - first:
+      213: -5139439065458463560
+    second: momia_sheet_45
+  - first:
+      213: -3145301207936233034
+    second: momia_sheet_46
+  - first:
+      213: 5046111601339762244
+    second: momia_sheet_47
+  - first:
+      213: -2495807991997912731
+    second: momia_sheet_48
+  - first:
+      213: -4571430514982220194
+    second: momia_sheet_49
+  - first:
+      213: 1762323924381785310
+    second: momia_sheet_50
+  - first:
+      213: -2385860525809659690
+    second: momia_sheet_51
+  - first:
+      213: 8845858445739677549
+    second: momia_sheet_52
+  - first:
+      213: 2527734225137676545
+    second: momia_sheet_53
+  - first:
+      213: -276789822914471020
+    second: momia_sheet_54
+  - first:
+      213: 5513033921773915420
+    second: momia_sheet_55
+  - first:
+      213: 2859580102313335737
+    second: momia_sheet_56
+  - first:
+      213: 7849442579796260610
+    second: momia_sheet_57
+  - first:
+      213: 3168703691981122698
+    second: momia_sheet_58
+  - first:
+      213: 3447534358417172692
+    second: momia_sheet_59
+  - first:
+      213: 6520374536184408379
+    second: momia_sheet_60
+  - first:
+      213: 6060197805510548027
+    second: momia_sheet_61
+  - first:
+      213: -5717113250997972805
+    second: momia_sheet_62
+  - first:
+      213: -5125447459041403148
+    second: momia_sheet_63
+  - first:
+      213: -243280162889666524
+    second: momia_sheet_64
+  - first:
+      213: -1272333011765983382
+    second: momia_sheet_65
+  - first:
+      213: 6714507739288947177
+    second: momia_sheet_66
+  - first:
+      213: 4113615518937983777
+    second: momia_sheet_67
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: momia_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 476
+        width: 174
+        height: 228
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11675f821dd735df0800000000000000
+      internalID: -192672021757987311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 442
+        width: 177
+        height: 260
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6496ce920cec4f830800000000000000
+      internalID: 4104132485173766470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 650
+        width: 12
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69600c9c2e09dbb70800000000000000
+      internalID: 8916442140985263766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 450
+        width: 168
+        height: 249
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6319683b7d7c643f0800000000000000
+      internalID: -916825744879480522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 643
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a124679cf2d24540800000000000000
+      internalID: 4990783319393444265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 451
+        width: 161
+        height: 241
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7e64f445012565e0800000000000000
+      internalID: -1917089759860855171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 461
+        width: 170
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95bc78a21205ffab0800000000000000
+      internalID: -4972167360216052903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 449
+        width: 166
+        height: 254
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 482ffdfdbaaebe4c0800000000000000
+      internalID: -4257050998832369020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_8
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 595
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0a7e50bb8e2b2c60800000000000000
+      internalID: 7794374757589088780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_9
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 563
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6bea680122b9aa00800000000000000
+      internalID: 768341066388269934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 526
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5daf486d302b53e80800000000000000
+      internalID: -8199451817004434731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 524
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d9bd95c39d4b8980800000000000000
+      internalID: -8535643371679663660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 512
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e2a7ce7fb1032f30800000000000000
+      internalID: 4549481970551726816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 502
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e4aa5d738b0a6b0800000000000000
+      internalID: -5287023412585542025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 490
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3930c253861f8c170800000000000000
+      internalID: 8199068551498957715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 573
+        y: 457
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3e65bb4339325340800000000000000
+      internalID: 4851002641107742267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 471
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5dcc61cfa61ae88a0800000000000000
+      internalID: -6300921347776787243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 450
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 289212b4709cf25a0800000000000000
+      internalID: -6543790700383622782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 450
+        width: 36
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09e2afcf4ca9f4560800000000000000
+      internalID: 7300223691839385232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 220
+        width: 161
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98e5989d52b1a3500800000000000000
+      internalID: 376643368216256137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 439
+        width: 30
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd97d1a3d1265c3e0800000000000000
+      internalID: -2034111779019327012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 458
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9be9ddf74ff742060800000000000000
+      internalID: 6927802814896643769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 457
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1fe2bb189eb956e0800000000000000
+      internalID: -1848236611549860066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 449
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccbdfcd9782df2020800000000000000
+      internalID: 2319303813029157836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 453
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35e68b1b4b1226180800000000000000
+      internalID: -9123692835139719597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 457
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e01d2dd370eac0430800000000000000
+      internalID: 3750563935818010894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 973
+        y: 453
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 910340f0ca94185c0800000000000000
+      internalID: -4215006772906938343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 453
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75c40a649a1e4c250800000000000000
+      internalID: 5964139923696012375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 221
+        width: 179
+        height: 233
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf35ed3860434efa0800000000000000
+      internalID: -5772431619795299332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 205
+        width: 160
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00532c5de314b5af0800000000000000
+      internalID: -406659603216845568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 200
+        width: 356
+        height: 254
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 180965c6490cbfcd0800000000000000
+      internalID: -2523211422505725823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 435
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 431366d89924c8090800000000000000
+      internalID: -8030970808238722764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 435
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 155fea09e8bb842e0800000000000000
+      internalID: -2141255401827535535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 446
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da50c95e8355792b0800000000000000
+      internalID: -5577895910616332883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 229
+        width: 155
+        height: 217
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 376f8ad45dd6c9240800000000000000
+      internalID: 4799832065768486515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 438
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bba8d230d38a3560800000000000000
+      internalID: 7294287476709436344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 416
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f892b24c42ff52720800000000000000
+      internalID: 2820941274992552335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 347
+        width: 15
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28dde84e9c42977f0800000000000000
+      internalID: -614419424617767550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 278
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4b4bb2e2140f9a20800000000000000
+      internalID: 3071177950049815373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 282
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 237723d191ab7db10800000000000000
+      internalID: 2006276776043640626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 280
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5eec030c2eb940200800000000000000
+      internalID: 145412486172036837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 225
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69b47a204a23ae0c0800000000000000
+      internalID: -4545765193876550762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 238
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 972fb6eb74c5b19c0800000000000000
+      internalID: -3955466384507669895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 207
+        width: 27
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d41c0da7077ca690800000000000000
+      internalID: -7589560397174401839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 0
+        width: 200
+        height: 223
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a02980e1917cbb310800000000000000
+      internalID: 1421949018057511434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 207
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bc259e566b0da8b0800000000000000
+      internalID: -5139439065458463560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 0
+        width: 155
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b19a554735a954d0800000000000000
+      internalID: -3145301207936233034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 201
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44685d614c3670640800000000000000
+      internalID: 5046111601339762244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 207
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5692269cadb1d5dd0800000000000000
+      internalID: -2495807991997912731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 207
+        width: 9
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5e8a17ca240f80c0800000000000000
+      internalID: -4571430514982220194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 203
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edcd2f3a548057810800000000000000
+      internalID: 1762323924381785310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_51
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 208
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d01d7b1e78b3eed0800000000000000
+      internalID: -2385860525809659690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_52
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 218
+        width: 16
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d67d3b7936dc2ca70800000000000000
+      internalID: 8845858445739677549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_53
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 172
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 101bdef92e0541320800000000000000
+      internalID: 2527734225137676545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_54
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 217
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49b5dbf5f15a82cf0800000000000000
+      internalID: -276789822914471020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_55
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 0
+        width: 184
+        height: 212
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1d430e742b328c40800000000000000
+      internalID: 5513033921773915420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_56
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 202
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bb592dc3f44fa720800000000000000
+      internalID: 2859580102313335737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_57
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 198
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 207f49d2072deec60800000000000000
+      internalID: 7849442579796260610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_58
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 0
+        width: 172
+        height: 201
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8ce007283f79fb20800000000000000
+      internalID: 3168703691981122698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_59
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 135
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d8e860bb3a18df20800000000000000
+      internalID: 3447534358417172692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_60
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 0
+        width: 182
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3926cf18160d7a50800000000000000
+      internalID: 6520374536184408379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_61
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 111
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3ade0abbc52a1450800000000000000
+      internalID: 6060197805510548027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_62
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 120
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb0569de9cbb8a0b0800000000000000
+      internalID: -5717113250997972805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_63
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 121
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fe98e811b0ced8b0800000000000000
+      internalID: -5125447459041403148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_64
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 56
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 420ff061bf1bf9cf0800000000000000
+      internalID: -243280162889666524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_65
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 44
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a678fadedd3c75ee0800000000000000
+      internalID: -1272333011765983382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_66
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 43
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e9cde1c639be2d50800000000000000
+      internalID: 6714507739288947177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: momia_sheet_67
+      rect:
+        serializedVersion: 2
+        x: 1013
+        y: 44
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12b25d4058f761930800000000000000
+      internalID: 4113615518937983777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      momia_sheet_0: -192672021757987311
+      momia_sheet_1: 4104132485173766470
+      momia_sheet_10: -8199451817004434731
+      momia_sheet_11: -8535643371679663660
+      momia_sheet_12: 4549481970551726816
+      momia_sheet_13: -5287023412585542025
+      momia_sheet_14: 8199068551498957715
+      momia_sheet_15: 4851002641107742267
+      momia_sheet_16: -6300921347776787243
+      momia_sheet_17: -6543790700383622782
+      momia_sheet_18: 7300223691839385232
+      momia_sheet_19: 376643368216256137
+      momia_sheet_2: 8916442140985263766
+      momia_sheet_20: -2034111779019327012
+      momia_sheet_21: 6927802814896643769
+      momia_sheet_22: -1848236611549860066
+      momia_sheet_23: 2319303813029157836
+      momia_sheet_24: -9123692835139719597
+      momia_sheet_25: 3750563935818010894
+      momia_sheet_26: -4215006772906938343
+      momia_sheet_27: 5964139923696012375
+      momia_sheet_28: -5772431619795299332
+      momia_sheet_29: -406659603216845568
+      momia_sheet_3: -916825744879480522
+      momia_sheet_30: -2523211422505725823
+      momia_sheet_31: -8030970808238722764
+      momia_sheet_32: -2141255401827535535
+      momia_sheet_33: -5577895910616332883
+      momia_sheet_34: 4799832065768486515
+      momia_sheet_35: 7294287476709436344
+      momia_sheet_36: 2820941274992552335
+      momia_sheet_37: -614419424617767550
+      momia_sheet_38: 3071177950049815373
+      momia_sheet_39: 2006276776043640626
+      momia_sheet_4: 4990783319393444265
+      momia_sheet_40: 145412486172036837
+      momia_sheet_41: -4545765193876550762
+      momia_sheet_42: -3955466384507669895
+      momia_sheet_43: -7589560397174401839
+      momia_sheet_44: 1421949018057511434
+      momia_sheet_45: -5139439065458463560
+      momia_sheet_46: -3145301207936233034
+      momia_sheet_47: 5046111601339762244
+      momia_sheet_48: -2495807991997912731
+      momia_sheet_49: -4571430514982220194
+      momia_sheet_5: -1917089759860855171
+      momia_sheet_50: 1762323924381785310
+      momia_sheet_51: -2385860525809659690
+      momia_sheet_52: 8845858445739677549
+      momia_sheet_53: 2527734225137676545
+      momia_sheet_54: -276789822914471020
+      momia_sheet_55: 5513033921773915420
+      momia_sheet_56: 2859580102313335737
+      momia_sheet_57: 7849442579796260610
+      momia_sheet_58: 3168703691981122698
+      momia_sheet_59: 3447534358417172692
+      momia_sheet_6: -4972167360216052903
+      momia_sheet_60: 6520374536184408379
+      momia_sheet_61: 6060197805510548027
+      momia_sheet_62: -5717113250997972805
+      momia_sheet_63: -5125447459041403148
+      momia_sheet_64: -243280162889666524
+      momia_sheet_65: -1272333011765983382
+      momia_sheet_66: 6714507739288947177
+      momia_sheet_67: 4113615518937983777
+      momia_sheet_7: -4257050998832369020
+      momia_sheet_8: 7794374757589088780
+      momia_sheet_9: 768341066388269934
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
