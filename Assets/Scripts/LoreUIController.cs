@@ -216,7 +216,7 @@ public class LoreUIController : MonoBehaviour
         }
 
         // Cerrar con E o Escape (Espacio se reserva para salto del vigilante)
-        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape) || TouchControlsManager.IsInteractTriggered())
         {
             CloseLorePanel();
             return;
@@ -476,6 +476,13 @@ public class LoreUIController : MonoBehaviour
         GUI.DrawTexture(new Rect(noteRect.x - 4 * s, noteRect.y - 4 * s, noteRect.width + 8 * s, noteRect.height + 8 * s), texBordeNota);
         // Papel de pergamino
         GUI.DrawTexture(noteRect, texPapelNota);
+
+        // Si tocan la pantalla fuera del pergamino (fondo oscuro), cerrar la nota con comodidad
+        if (Event.current.type == EventType.MouseDown && !noteRect.Contains(Event.current.mousePosition) && (Time.unscaledTime - openTime) >= 0.35f)
+        {
+            CloseLorePanel();
+            return;
+        }
 
         if (isCatalogMode)
         {
