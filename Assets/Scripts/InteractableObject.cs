@@ -162,7 +162,9 @@ public class InteractableObject : MonoBehaviour, IInteractable
             }
         }
 
-        if (playerInRange && CanInteract() && Input.GetKeyDown(KeyCode.E))
+        bool tocadoEnPantalla = ComprobarToqueDirecto();
+
+        if ((playerInRange || tocadoEnPantalla) && CanInteract() && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || tocadoEnPantalla))
         {
             LoreUIController loreUI = LoreUIController.Instance != null ? LoreUIController.Instance : UnityEngine.Object.FindFirstObjectByType<LoreUIController>();
             // Si el panel de lore está abierto o se acaba de cerrar este frame, no reactivar inmediatamente
@@ -173,6 +175,56 @@ public class InteractableObject : MonoBehaviour, IInteractable
 
             Interact();
         }
+    }
+
+    /// <summary>
+    /// Permite tocar la ficha de historia, vitrina o altar directamente con el dedo en celular/tablet
+    /// </summary>
+    private bool ComprobarToqueDirecto()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return false;
+
+        Transform p = PlayerController.Instance != null ? PlayerController.Instance.transform : null;
+        if (p == null)
+        {
+            GameObject pGo = GameObject.FindGameObjectWithTag("Player");
+            if (pGo != null) p = pGo.transform;
+        }
+
+        // Solo permitir interactuar al tocar si el jugador está en un radio accesible (máximo 4.8 unidades)
+        if (p != null && Vector2.Distance(transform.position, p.position) > 4.8f) return false;
+
+        // 1. Detección táctil en celulares y tablets
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    // No confundir con la zona izquierda del joystick
+                    if (t.position.x < Screen.width * 0.45f && t.position.y < Screen.height * 0.52f) continue;
+
+                    Vector3 worldPos = cam.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldPos)) return true;
+                    if (Vector2.Distance(worldPos, transform.position) <= 1.4f) return true;
+                }
+            }
+        }
+        // 2. Clic izquierdo con el ratón
+        else if (Input.GetMouseButtonDown(0))
+        {
+            if (Input.mousePosition.x < Screen.width * 0.45f && Input.mousePosition.y < Screen.height * 0.52f) return false;
+
+            Vector3 worldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldPos)) return true;
+            if (Vector2.Distance(worldPos, transform.position) <= 1.4f) return true;
+        }
+
+        return false;
     }
 
     public bool CanInteract()

@@ -82,7 +82,7 @@ public class PuertaSalida : MonoBehaviour
         float dist = Vector2.Distance(transform.position, playerTransform.position);
         playerInRange = (dist <= distanciaInteraccion);
 
-        if (playerInRange && !yaAbierta && !abriendo && Input.GetKeyDown(KeyCode.E))
+        if (playerInRange && !yaAbierta && !abriendo && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered()))
         {
             IntentarEscape();
         }
