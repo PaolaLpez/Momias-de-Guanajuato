@@ -31,8 +31,12 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
     public bool SonidoEnmascaradoPorVapor { get; private set; }
     public float TiempoUltimaDeteccionMic { get; private set; } = -99f;
 
-    // Umbral dinámico según sensibilidad configurada (calibrado para no dispararse con ruido ambiente)
-    public float UmbralDisparo => Mathf.Lerp(0.62f, 0.26f, sensibilidad);
+    public static bool VozSimuladaActiva { get; set; } = false;
+    private AudioSource audioSourceVoz;
+    private static AudioClip clipVozDetectada;
+
+    // Umbral dinámico según sensibilidad configurada (calibrado para captar la voz humana con naturalidad)
+    public float UmbralDisparo => Mathf.Lerp(0.48f, 0.18f, sensibilidad);
 
     private class CanalMicrofono
     {
@@ -41,8 +45,8 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
     }
 
     private readonly List<CanalMicrofono> canalesActivos = new List<CanalMicrofono>();
-    private const int VentanaMuestras = 128;
-    private const int FrecuenciaMuestreo = 16000;
+    private const int VentanaMuestras = 512;
+    private const int FrecuenciaMuestreo = 44100;
     private const float IntervaloMuestreoMic = 0.04f; // 25 Hz: respuesta instantánea sin bloquear el hilo principal
     private readonly float[] bufferMuestras = new float[VentanaMuestras];
 
@@ -149,7 +153,14 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
                         {
                             Microphone.End(dev);
                         }
-                        AudioClip clip = Microphone.Start(dev, true, 3, FrecuenciaMuestreo);
+
+                        int minF, maxF;
+                        Microphone.GetDeviceCaps(dev, out minF, out maxF);
+                        int freq = 44100;
+                        if (minF > 0 && freq < minF) freq = minF;
+                        if (maxF > 0 && freq > maxF) freq = maxF;
+
+                        AudioClip clip = Microphone.Start(dev, true, 3, freq);
                         if (clip != null)
                         {
                             canalesActivos.Add(new CanalMicrofono { nombre = dev, clip = clip });
@@ -163,7 +174,13 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
 
             if (canalesActivos.Count == 0)
             {
-                AudioClip clipDefault = Microphone.Start(null, true, 3, FrecuenciaMuestreo);
+                int minF, maxF;
+                Microphone.GetDeviceCaps(null, out minF, out maxF);
+                int freq = 44100;
+                if (minF > 0 && freq < minF) freq = minF;
+                if (maxF > 0 && freq > maxF) freq = maxF;
+
+                AudioClip clipDefault = Microphone.Start(null, true, 3, freq);
                 if (clipDefault != null)
                 {
                     canalesActivos.Add(new CanalMicrofono { nombre = "Predeterminado", clip = clipDefault });
@@ -260,7 +277,7 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
 
             float pisoEfectivo = Mathf.Max(PisoRuidoElectrico, pisoRuidoAdaptativo);
             float senalLimpia = Mathf.Max(0f, nivelEntradaBruto - pisoEfectivo);
-            float gananciaSegunSensibilidad = Mathf.Lerp(2.4f, 9.5f, sensibilidad);
+            float gananciaSegunSensibilidad = Mathf.Lerp(4.5f, 16.0f, sensibilidad);
             ultimoNivelAmplificado = Mathf.Clamp01(senalLimpia * gananciaSegunSensibilidad);
         }
 
@@ -280,6 +297,16 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
         DecibeliosAprox = Mathf.Lerp(-60f, 0f, NivelVolumenActual);
 
         float umbral = UmbralDisparo;
+
+        // Soporte de voz simulada (Tecla V, botón táctil en pantalla o móvil)
+        bool inputVozSimulada = Input.GetKey(KeyCode.V) || VozSimuladaActiva || TouchControlsManager.IsVoiceSimulated;
+        if (inputVozSimulada)
+        {
+            ultimoNivelAmplificado = 0.95f;
+            NivelVolumenActual = Mathf.Max(NivelVolumenActual, 0.95f);
+            tiempoSostenidoSobreUmbral = 0.35f;
+        }
+
         bool sobreUmbralInstantaneo = microfonoActivo && NivelVolumenActual >= umbral;
         if (sobreUmbralInstantaneo)
         {
@@ -290,8 +317,8 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
             tiempoSostenidoSobreUmbral = Mathf.Max(0f, tiempoSostenidoSobreUmbral - Time.deltaTime * 3f);
         }
 
-        // Exigir al menos 0.14s de voz real continua sobre el umbral para ignorar chasquidos o estática
-        SuperandoUmbral = sobreUmbralInstantaneo && tiempoSostenidoSobreUmbral >= 0.14f;
+        // Exigir al menos 0.14s de voz real continua sobre el umbral para ignorar chasquidos o estática (instantáneo si es voz simulada)
+        SuperandoUmbral = sobreUmbralInstantaneo && (tiempoSostenidoSobreUmbral >= 0.14f || inputVozSimulada);
 
         if (temporizadorCooldown > 0f)
         {
@@ -308,6 +335,18 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
                 return;
             }
 
+            // Reproducir sonido audible en el juego de la voz/aliento de la vigilante
+            if (audioSourceVoz == null)
+            {
+                audioSourceVoz = GetComponent<AudioSource>();
+                if (audioSourceVoz == null) audioSourceVoz = gameObject.AddComponent<AudioSource>();
+                audioSourceVoz.spatialBlend = 0f;
+            }
+            if (audioSourceVoz != null)
+            {
+                audioSourceVoz.PlayOneShot(GenerarAudioAlertaVoz(), 0.92f);
+            }
+
             float exceso = Mathf.InverseLerp(umbral, 1f, NivelVolumenActual);
             float radioEmitido = Mathf.Lerp(radioMinimoSonido, radioMaximoSonido, exceso);
             TiempoUltimaDeteccionMic = Time.time;
@@ -318,6 +357,34 @@ public class DetectorMicrofonoNivel2 : MonoBehaviour
 
             TrampaAcusticaNivel2.EmitirRuido(transform.position, radioEmitido, etiqueta);
         }
+    }
+
+    private AudioClip GenerarAudioAlertaVoz()
+    {
+        if (clipVozDetectada != null) return clipVozDetectada;
+        int sampleRate = 22050;
+        float duracion = 0.50f;
+        int totalMuestras = Mathf.CeilToInt(sampleRate * duracion);
+        float[] muestras = new float[totalMuestras];
+        System.Random rng = new System.Random(54321);
+
+        for (int i = 0; i < totalMuestras; i++)
+        {
+            float t = (float)i / sampleRate;
+            float prog = t / duracion;
+
+            // Aliento / suspiro / quejido sonoro que suena claramente en altavoces/auriculares
+            float formante1 = Mathf.Sin(2f * Mathf.PI * 360f * t) * 0.38f;
+            float formante2 = Mathf.Sin(2f * Mathf.PI * 680f * t) * 0.28f;
+            float soplido = ((float)rng.NextDouble() * 2f - 1f) * 0.42f;
+            float env = Mathf.Sin(prog * Mathf.PI) * Mathf.Exp(-prog * 1.8f);
+
+            muestras[i] = Mathf.Clamp((formante1 + formante2 + soplido) * env * 0.90f, -0.95f, 0.95f);
+        }
+
+        clipVozDetectada = AudioClip.Create("AlertaVozJugador_Cue", totalMuestras, 1, sampleRate, false);
+        clipVozDetectada.SetData(muestras, 0);
+        return clipVozDetectada;
     }
 
     private float LeerNivelAudioMicrofono()
