@@ -48,6 +48,34 @@ public class ValvulaVaporNivel2 : MonoBehaviour
         if (collision.CompareTag("Player")) jugadorEnRango = false;
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (estaActiva)
@@ -63,9 +91,13 @@ public class ValvulaVaporNivel2 : MonoBehaviour
                 CerrarValvula();
             }
         }
-        else if (jugadorEnRango && PuedeActivarse() && Input.GetKeyDown(KeyCode.E))
+        else
         {
-            AbrirValvula();
+            bool toque = ComprobarToqueDirecto();
+            if ((jugadorEnRango || toque) && PuedeActivarse() && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || toque))
+            {
+                AbrirValvula();
+            }
         }
     }
 
