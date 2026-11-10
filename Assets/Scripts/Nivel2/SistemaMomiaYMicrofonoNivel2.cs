@@ -68,7 +68,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
     public static bool EsInputCorrerActivo()
     {
-        bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || TouchControlsManager.IsRunning;
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         if (!shift) shift = TeclaFisicaPresionadaWin(0x10); // VK_SHIFT
 #endif
@@ -206,6 +206,8 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             victoriaActivada = false;
             menuConfiguracionAbierto = false;
             tiempoTranscurridoNivel = 0f;
+            sigiloAlternadoC = false;
+            ModoSigiloActivo = false;
         }
 
         CargarTexturasJumpscare();
@@ -511,7 +513,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
         if (rejaAbiertaCercanaParaCerrar != null)
         {
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered())
             {
                 StartCoroutine(SecuenciaCerrarRejaParaEncerrar(rejaAbiertaCercanaParaCerrar));
             }
@@ -795,27 +797,44 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
         bool escondido = DetectorMicrofonoNivel2.VerificarSiJugadorEstaEscondido();
 
-        // Actualizar el Modo Sigilo de la Guardia (Ctrl mantenido o tecla C para alternar; correr con Shift o esconderse lo desactiva)
+        // Actualizar el Modo Sigilo de la Guardia:
+        // Por defecto camina erguida normal. SOLO se agacha si:
+        // - Se mantiene presionada la tecla Ctrl (LeftControl o RightControl)
+        // - Se presiona la tecla C (o combinación Ctrl+C) para alternar
+        // - Se toca el botón táctil [SIGILO] en pantalla
+        // Correr con Shift, saltar con Espacio o esconderse desactiva el sigilo de inmediato.
         if (Application.isPlaying)
         {
+            bool corriendoInput = EsInputCorrerActivo();
+            bool saltandoInput = playerScript != null && playerScript.EstaSaltando;
+
             if (Input.GetKeyDown(KeyCode.C))
             {
                 sigiloAlternadoC = !sigiloAlternadoC;
+                if (TouchControlsManager.Instance != null)
+                {
+                    TouchControlsManager.Instance.SetStealth(sigiloAlternadoC);
+                }
             }
-            bool corriendoInput = EsInputCorrerActivo();
-            if (corriendoInput || escondido)
+
+            if (corriendoInput || saltandoInput || escondido)
             {
                 sigiloAlternadoC = false;
+                if (TouchControlsManager.Instance != null)
+                {
+                    TouchControlsManager.Instance.SetStealth(false);
+                }
             }
+
             bool ctrlMantenido = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-            ctrlMantenido = ctrlMantenido || TeclaFisicaPresionadaWin(0x11); // VK_CONTROL
-#endif
-            ModoSigiloActivo = !escondido && !corriendoInput && (ctrlMantenido || sigiloAlternadoC);
+            bool touchSigilo = TouchControlsManager.IsStealth;
+
+            ModoSigiloActivo = !escondido && !corriendoInput && !saltandoInput && (ctrlMantenido || sigiloAlternadoC || touchSigilo);
         }
         else
         {
             ModoSigiloActivo = false;
+            sigiloAlternadoC = false;
         }
 
         // Apagar siempre el SpriteRenderer raíz para que jamás dibuje un sprite estático encima de VisualPivot
@@ -860,7 +879,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             }
             else if (ModoSigiloActivo)
             {
-                playerVisualSr.color = new Color(0.76f, 0.86f, 0.96f, 0.94f);
+                playerVisualSr.color = Color.white;
             }
             else
             {
@@ -926,8 +945,8 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         playerTransform.localScale = new Vector3(1.5f, 1.5f, 1f);
         playerTransform.localRotation = Quaternion.identity;
 
-        float velCorrer = 10.2f;
-        float velCaminarNormal = 5.2f;
+        float velCorrer = 9.5f;
+        float velCaminarNormal = 6.2f;
         float velSigilo = 2.8f;
 
         if (ModoSigiloActivo)
@@ -1006,6 +1025,13 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         if (up) moveY += 1f;
         if (down) moveY -= 1f;
 
+        Vector2 touchJoy = TouchControlsManager.Movement;
+        if (touchJoy.sqrMagnitude > 0.04f)
+        {
+            moveX += touchJoy.x;
+            moveY += touchJoy.y;
+        }
+
         Vector2 dir = new Vector2(moveX, moveY);
         return dir.sqrMagnitude > 1f ? dir.normalized : dir;
     }
@@ -1025,6 +1051,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         if (!ModoSigiloActivo)
         {
             timerAnimCaminataSigilo = 0f;
+            frameAnimCaminataSigilo = 0;
             if (vp != null && !playerScript.EstaSaltando)
             {
                 vp.localScale = Vector3.one;
@@ -1034,6 +1061,19 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             if (playerScript != null)
             {
                 playerScript.bloquearResetVisualPivot = false;
+
+                // Restaurar de inmediato el sprite erguido cuando no esté en sigilo
+                if (!playerScript.EstaSaltando && !playerScript.EstaMuerto && playerVisualSr != null && playerScript.idleSprite != null)
+                {
+                    Vector2 vel = playerRb != null ? playerRb.linearVelocity : Vector2.zero;
+                    if (vel.sqrMagnitude < 0.05f)
+                    {
+                        if (VigilanteCrouchSprites.EstaListo && playerVisualSr.sprite == VigilanteCrouchSprites.CrouchIdleSprite)
+                        {
+                            playerVisualSr.sprite = playerScript.idleSprite;
+                        }
+                    }
+                }
             }
             return;
         }
@@ -1079,8 +1119,29 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
                 if (propPlayerFacingDirection != null) propPlayerFacingDirection.SetValue(playerScript, Vector2.down, null);
             }
 
-            // Ciclar los 12 frames de caminata (walkSprites) con cadencia pausada de sigilo
-            if (playerVisualSr != null && playerScript.walkSprites != null && playerScript.walkSprites.Length > 0)
+            // Reproducir ciclo de caminata agachada en sigilo con los sprites auténticos proporcionados
+            if (VigilanteCrouchSprites.EstaListo && VigilanteCrouchSprites.CrouchWalkFrames != null && VigilanteCrouchSprites.CrouchWalkFrames.Length > 0)
+            {
+                timerAnimCaminataSigilo += Time.deltaTime;
+                if (timerAnimCaminataSigilo >= 0.11f)
+                {
+                    timerAnimCaminataSigilo = 0f;
+                    frameAnimCaminataSigilo = (frameAnimCaminataSigilo + 1) % VigilanteCrouchSprites.CrouchWalkFrames.Length;
+                }
+                Sprite spPaso = VigilanteCrouchSprites.CrouchWalkFrames[frameAnimCaminataSigilo % VigilanteCrouchSprites.CrouchWalkFrames.Length];
+                if (spPaso != null && playerVisualSr != null)
+                {
+                    playerVisualSr.sprite = spPaso;
+                }
+
+                if (vp != null && !playerScript.EstaSaltando)
+                {
+                    vp.localPosition = Vector3.zero;
+                    vp.localScale = Vector3.one;
+                    vp.localRotation = Quaternion.identity;
+                }
+            }
+            else if (playerVisualSr != null && playerScript.walkSprites != null && playerScript.walkSprites.Length > 0)
             {
                 timerAnimCaminataSigilo += Time.deltaTime;
                 if (timerAnimCaminataSigilo >= 0.13f)
@@ -1094,38 +1155,41 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
                     playerVisualSr.sprite = spPaso;
                 }
             }
-
-            // Postura claramente agachada (crouch) y más pegada al suelo
-            if (vp != null && !playerScript.EstaSaltando)
-            {
-                fasePasoSigilo += Time.deltaTime * 5.0f;
-                float ondaPaso = Mathf.Sin(fasePasoSigilo);
-                float rebotePaso = Mathf.Abs(ondaPaso) * 0.025f;
-
-                vp.localPosition = new Vector3(0f, -0.40f + rebotePaso, 0f);
-                vp.localScale = new Vector3(1.26f - rebotePaso * 0.12f, 0.65f + rebotePaso * 0.15f, 1f);
-
-                float signoInclinacion = (playerVisualSr != null && playerVisualSr.flipX) ? 1f : -1f;
-                vp.localRotation = Quaternion.Euler(0f, 0f, signoInclinacion * 4.0f + ondaPaso * 1.5f);
-            }
         }
         else
         {
-            timerAnimCaminataSigilo = 0.16f; // Listo para animar el primer paso al instante de moverse
+            timerAnimCaminataSigilo = 0.14f;
             frameAnimCaminataSigilo = 0;
 
-            if (playerVisualSr != null && playerScript.idleSprite != null && !playerScript.EstaSaltando)
+            if (VigilanteCrouchSprites.EstaListo && VigilanteCrouchSprites.CrouchIdleSprite != null)
             {
-                playerVisualSr.sprite = playerScript.idleSprite;
-            }
+                if (playerVisualSr != null && !playerScript.EstaSaltando)
+                {
+                    playerVisualSr.sprite = VigilanteCrouchSprites.CrouchIdleSprite;
+                }
 
-            // Postura agachada quieta en Modo Sigilo (crouch)
-            if (vp != null && !playerScript.EstaSaltando)
+                if (vp != null && !playerScript.EstaSaltando)
+                {
+                    vp.localPosition = Vector3.zero;
+                    vp.localScale = Vector3.one;
+                    vp.localRotation = Quaternion.identity;
+                }
+            }
+            else
             {
-                float respSigilo = Mathf.Sin(Time.time * 2.2f) * 0.015f;
-                vp.localPosition = new Vector3(0f, -0.40f, 0f);
-                vp.localScale = new Vector3(1.26f, 0.65f + respSigilo, 1f);
-                vp.localRotation = Quaternion.identity;
+                if (playerVisualSr != null && playerScript.idleSprite != null && !playerScript.EstaSaltando)
+                {
+                    playerVisualSr.sprite = playerScript.idleSprite;
+                }
+
+                // Postura agachada quieta en Modo Sigilo (crouch)
+                if (vp != null && !playerScript.EstaSaltando)
+                {
+                    float respSigilo = Mathf.Sin(Time.time * 2.2f) * 0.015f;
+                    vp.localPosition = new Vector3(0f, -0.40f, 0f);
+                    vp.localScale = new Vector3(1.26f, 0.65f + respSigilo, 1f);
+                    vp.localRotation = Quaternion.identity;
+                }
             }
         }
     }
@@ -1160,12 +1224,14 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
             if (playerScript != null)
             {
-                playerScript.velocidadCaminar = 10.5f;
-                playerScript.velocidadCorrer = 15.0f;
+                playerScript.velocidadCaminar = 6.2f;
+                playerScript.velocidadCorrer = 9.5f;
                 playerScript.museoMinX = -26.5f;
                 playerScript.museoMaxX = 26.5f;
                 playerScript.museoMinY = -20.0f;
                 playerScript.museoMaxY = 23.5f;
+
+                VigilanteCrouchSprites.Inicializar(playerScript.idleSprite != null ? playerScript.idleSprite.pixelsPerUnit : 64f);
             }
 
             if (playerRb != null)
@@ -2296,10 +2362,16 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
         if (momia2 != null)
         {
-            Color colorOnda = (etiqueta != null && etiqueta.Contains("MICRÓFONO"))
-                ? new Color(1f, 0.25f, 0.2f, 0.65f)
-                : new Color(0.55f, 0.82f, 0.95f, 0.48f);
-            momia2.GenerarOndaAcusticaMomia(posicion, Mathf.Clamp(radio * 0.28f, 2.0f, 5.5f), colorOnda);
+            bool esVoz = etiqueta != null && etiqueta.Contains("MICRÓFONO");
+            if (esVoz)
+            {
+                momia2.ReaccionarAVozMicrofono(posicion, radio);
+            }
+            else
+            {
+                Color colorOnda = new Color(0.55f, 0.82f, 0.95f, 0.48f);
+                momia2.GenerarOndaAcusticaMomia(posicion, Mathf.Clamp(radio * 0.28f, 2.0f, 5.5f), colorOnda);
+            }
         }
     }
 
@@ -2551,8 +2623,8 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         }
 
         // Pie de controles discreto abajo
-        GUI.Label(new Rect(12f, Screen.height - 22f, 820f, 18f),
-            "<color=#888888>WASD/Flechas: Mover | Ctrl/C: Modo Sigilo | Shift: Correr (¡Hace ruido!) | Espacio: Saltar | E: Interactuar | ESC: Configuración</color>",
+        GUI.Label(new Rect(12f, Screen.height - 22f, 920f, 18f),
+            "<color=#888888>WASD/Flechas: Mover | Ctrl/C: Modo Sigilo | Shift: Correr (¡Hace ruido!) | Espacio: Saltar | E: Interactuar | M/P: Plano | ESC: Configuración</color>",
             estiloTextoCuadrante);
 
         if (menuConfiguracionAbierto)

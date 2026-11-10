@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movimiento")]
-    public float velocidadCaminar = 10.5f;
-    public float velocidadCorrer = 15.0f;
+    public float velocidadCaminar = 6.2f;
+    public float velocidadCorrer = 9.5f;
 
     [Header("Estadísticas de Salud")]
     public float vidaMaxima = 150f;
@@ -96,8 +96,9 @@ public class PlayerController : MonoBehaviour
         boxCol.offset = new Vector2(0f, -0.35f);
         EstaMuerto = false;
         vidaActual = vidaMaxima;
-        velocidadCaminar = Mathf.Max(velocidadCaminar, 10.5f);
-        velocidadCorrer = Mathf.Max(velocidadCorrer, 15.0f);
+        // Velocidades calibradas: caminar fijo y correr más pausado y controlable
+        if (velocidadCaminar > 8.0f || velocidadCaminar <= 0f) velocidadCaminar = 6.2f;
+        if (velocidadCorrer > 11.5f || velocidadCorrer <= 0f) velocidadCorrer = 9.5f;
         museoMinY = -20.8f;
         museoMinX = -29.2f;
         museoMaxX = 29.2f;
@@ -184,6 +185,8 @@ public class PlayerController : MonoBehaviour
         jumpSprite = Resources.Load<Sprite>("Vigilante/vigilante_jump");
         deadSprite = Resources.Load<Sprite>("Vigilante/vigilante_dead");
 
+        VigilanteCrouchSprites.Inicializar(idleSprite != null ? idleSprite.pixelsPerUnit : 64f);
+
         if (sr != null && idleSprite != null) sr.sprite = idleSprite;
     }
 
@@ -214,7 +217,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Movimiento con flechas o WASD
+        // Movimiento con flechas o WASD (y Joystick táctil en celular/tablet)
         float moveX = 0f;
         float moveY = 0f;
 
@@ -222,6 +225,14 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) moveX -= 1f;
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) moveY += 1f;
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) moveY -= 1f;
+
+        // Soporte táctil de palanca/joystick virtual en celulares y tablets
+        Vector2 touchDir = TouchControlsManager.Movement;
+        if (touchDir.sqrMagnitude > 0.04f)
+        {
+            moveX += touchDir.x;
+            moveY += touchDir.y;
+        }
 
         Vector2 inputDir = new Vector2(moveX, moveY).normalized;
 
@@ -244,7 +255,7 @@ public class PlayerController : MonoBehaviour
             facingDirection = Vector2.down;
         }
 
-        bool corriendo = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool corriendo = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || TouchControlsManager.IsRunning;
         float vel = corriendo ? velocidadCorrer : velocidadCaminar;
 
         if (rb != null)
@@ -262,8 +273,8 @@ public class PlayerController : MonoBehaviour
             transform.position = pos;
         }
 
-        // Salto con barra espaciadora
-        if (Input.GetKeyDown(KeyCode.Space) && !estaSaltando)
+        // Salto con barra espaciadora o botón táctil
+        if ((Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsJumpTriggered()) && !estaSaltando)
         {
             estaSaltando = true;
             tiempoSalto = 0f;
@@ -316,6 +327,35 @@ public class PlayerController : MonoBehaviour
     private void Animar(bool moviendose, bool corriendo)
     {
         if (sr == null) return;
+
+        bool enSigilo = (TouchControlsManager.IsStealth || SistemaMomiaYMicrofonoNivel2.ModoSigiloActivo) && !corriendo && !estaSaltando;
+        if (enSigilo && VigilanteCrouchSprites.EstaListo)
+        {
+            if (!moviendose)
+            {
+                if (VigilanteCrouchSprites.CrouchIdleSprite != null) sr.sprite = VigilanteCrouchSprites.CrouchIdleSprite;
+                currentFrame = 0;
+                animTimer = 0f;
+                return;
+            }
+
+            Sprite[] crouchSprites = VigilanteCrouchSprites.CrouchWalkFrames;
+            float frameRateCrouch = 0.11f;
+            animTimer += Time.deltaTime;
+            if (animTimer >= frameRateCrouch)
+            {
+                animTimer = 0f;
+                if (crouchSprites != null && crouchSprites.Length > 0)
+                {
+                    currentFrame = (currentFrame + 1) % crouchSprites.Length;
+                    if (crouchSprites[currentFrame] != null)
+                    {
+                        sr.sprite = crouchSprites[currentFrame];
+                    }
+                }
+            }
+            return;
+        }
 
         if (!moviendose)
         {
