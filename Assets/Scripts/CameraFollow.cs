@@ -9,6 +9,7 @@ public class CameraFollow : MonoBehaviour
     [Header("Zoom")]
     public float zoomCercano = 3.6f;     // Zoom de seguimiento cercano de la vigilante
     public float zoomMapaCompleto = 16.5f; // Zoom panorámico de todo el museo
+    public Vector3 centroVistaPanoramica = new Vector3(0f, 0f, -10f);
     public float velocidadZoom = 6f;
 
     // Límites de cámara que permiten recorrer libremente todo el Colosal Museo sin perder al vigilante
@@ -19,13 +20,17 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Control de Tecla M")]
     public bool permitirTeclaM = true;
+    public bool respetarLimitesExternos = false;
 
     private Camera cam;
     private bool viendoMapaCompleto = false;
 
     void Start()
     {
-        minY = -18.8f;
+        if (!respetarLimitesExternos)
+        {
+            minY = -18.8f;
+        }
         cam = GetComponent<Camera>();
         if (cam != null)
         {
@@ -66,9 +71,8 @@ public class CameraFollow : MonoBehaviour
 
         if (viendoMapaCompleto)
         {
-            // Vista general centrada en todo el complejo del museo
-            Vector3 centroMuseo = new Vector3(0, 0, -10f);
-            transform.position = Vector3.Lerp(transform.position, centroMuseo, Time.deltaTime * suavizado);
+            // Vista general centrada en todo el complejo
+            transform.position = Vector3.Lerp(transform.position, centroVistaPanoramica, Time.deltaTime * suavizado);
         }
         else
         {
