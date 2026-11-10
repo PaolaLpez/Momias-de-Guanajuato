@@ -54,6 +54,34 @@ public class CCTVMonitorNivel3 : MonoBehaviour
         }
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (playerTransform == null)
@@ -68,8 +96,11 @@ public class CCTVMonitorNivel3 : MonoBehaviour
             return;
         }
 
-        // Abrir/Cerrar monitor de cámaras EXCLUSIVAMENTE con la tecla TAB (Tabulador)
-        if (Input.GetKeyDown(KeyCode.Tab))
+        bool cerca = EstaCerca();
+        bool toque = ComprobarToqueDirecto();
+
+        // Abrir/Cerrar monitor de cámaras con la tecla TAB (o botón [E] / toque directo al estar cerca de la consola)
+        if (Input.GetKeyDown(KeyCode.Tab) || ((cerca || toque) && (TouchControlsManager.IsInteractTriggered() || toque)))
         {
             if (!monitorAbierto) AbrirMonitor();
             else CerrarMonitor();
