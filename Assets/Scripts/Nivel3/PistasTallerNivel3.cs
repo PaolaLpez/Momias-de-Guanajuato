@@ -46,6 +46,62 @@ public class PistasTallerNivel3 : MonoBehaviour
         }
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+        }
+        return false;
+    }
+
+    private bool ComprobarToqueMantenido()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Moved || t.phase == TouchPhase.Stationary)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.5f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButton(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.5f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (playerTransform == null)
@@ -67,26 +123,29 @@ public class PistasTallerNivel3 : MonoBehaviour
         {
             dist = Vector2.Distance(transform.position, playerTransform.position);
         }
-        jugadorEnRango = (dist <= 3.2f);
+        jugadorEnRango = (dist <= 3.5f);
 
-        if (!jugadorEnRango)
+        bool toqueDirecto = ComprobarToqueDirecto();
+        bool toqueMantenido = ComprobarToqueMantenido();
+
+        if (!jugadorEnRango && !toqueDirecto && !toqueMantenido)
         {
             tiempoForzando = 0f;
             return;
         }
 
-        // Tipo 1 y 2: Presionar [F] (o Enter o Espacio)
+        // Tipo 1 y 2: Presionar [F] (o Enter, Espacio o botón táctil o toque directo en pantalla)
         if (tipoPista != TipoPista.GavetaMorgue)
         {
-            if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered() || toqueDirecto)
             {
                 DescubrirPista();
             }
         }
         else
         {
-            // Tipo 3: Mantener [F] (o Enter o Espacio) presionado para deshelar/forzar la gaveta
-            if (Input.GetKey(KeyCode.F) || Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Space))
+            // Tipo 3: Mantener presionado para deshelar/forzar la gaveta (o mantener dedo sobre la gaveta)
+            if (Input.GetKey(KeyCode.F) || Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Space) || TouchControlsManager.IsInteractHeld || toqueMantenido)
             {
                 tiempoForzando += Time.deltaTime;
 

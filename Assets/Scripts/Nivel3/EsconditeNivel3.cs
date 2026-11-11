@@ -57,6 +57,37 @@ public class EsconditeNivel3 : MonoBehaviour
         }
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        float zDist = Mathf.Abs(Camera.main.transform.position.z);
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector3 sp = new Vector3(t.position.x, t.position.y, zDist);
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 sp = new Vector3(Input.mousePosition.x, Input.mousePosition.y, zDist);
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (playerTransform == null)
@@ -72,7 +103,8 @@ public class EsconditeNivel3 : MonoBehaviour
         }
 
         float dist = Vector2.Distance(transform.position, playerTransform.position);
-        bool cerca = dist <= distanciaInteraccion;
+        bool cerca = dist <= distanciaInteraccion + 1.0f;
+        bool toque = ComprobarToqueDirecto();
 
         if (ocupado)
         {
@@ -80,14 +112,14 @@ public class EsconditeNivel3 : MonoBehaviour
             playerTransform.position = transform.position;
             if (playerRb != null) playerRb.linearVelocity = Vector2.zero;
 
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered() || toque)
             {
                 SalirDelEscondite();
             }
         }
-        else if (cerca && !JugadorEscondido)
+        else if ((cerca || toque) && !JugadorEscondido)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || toque)
             {
                 EntrarAlEscondite();
             }
