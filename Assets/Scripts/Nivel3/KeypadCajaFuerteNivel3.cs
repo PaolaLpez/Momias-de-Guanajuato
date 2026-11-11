@@ -47,6 +47,34 @@ public class KeypadCajaFuerteNivel3 : MonoBehaviour
         }
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (playerTransform == null)
@@ -58,10 +86,12 @@ public class KeypadCajaFuerteNivel3 : MonoBehaviour
         if (cajaAbierta || (Nivel3Manager.Instance != null && Nivel3Manager.Instance.JuegoPausadoOTerminado)) return;
 
         bool cerca = EstaCerca();
-        if (Input.GetKeyDown(KeyCode.F))
+        bool toque = ComprobarToqueDirecto();
+
+        if (Input.GetKeyDown(KeyCode.F) || ((cerca || toque) && (TouchControlsManager.IsInteractTriggered() || toque)))
         {
             if (modalAbierto) CerrarKeypad();
-            else if (cerca) AbrirKeypad();
+            else if (cerca || toque) AbrirKeypad();
         }
         else if (cerca && !modalAbierto && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)))
         {

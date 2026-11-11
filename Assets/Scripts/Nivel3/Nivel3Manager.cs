@@ -503,7 +503,7 @@ public class Nivel3Manager : MonoBehaviour
                 if (PuertaEscapeAbierta || TieneLlaveMaestra)
                 {
                     promptInteraccionTexto = "¡COMPUERTA ABIERTA! Cruza o pulsa [F] para escapar";
-                    if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return))
+                    if (Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Return) || TouchControlsManager.IsInteractTriggered())
                     {
                         EscaparNivel3();
                     }
