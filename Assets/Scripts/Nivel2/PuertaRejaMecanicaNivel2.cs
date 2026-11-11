@@ -72,6 +72,34 @@ public class PuertaRejaMecanicaNivel2 : MonoBehaviour
         return col.CompareTag("Player") || col.GetComponent<PlayerController>() != null || col.gameObject.name.Contains("Vigilante");
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (estaAbierta)
@@ -86,19 +114,22 @@ public class PuertaRejaMecanicaNivel2 : MonoBehaviour
         if (playerTransform != null && !abriendo)
         {
             float dist = Vector2.Distance(transform.position, playerTransform.position);
-            if (dist <= distanciaInteraccion + 1.0f)
+            if (dist <= distanciaInteraccion + 1.2f)
             {
                 jugadorEnRango = true;
             }
-            else if (dist > distanciaInteraccion + 1.8f)
+            else if (dist > distanciaInteraccion + 2.0f)
             {
                 jugadorEnRango = false;
             }
         }
 
-        if (jugadorEnRango && !abriendo)
+        bool toqueDirecto = ComprobarToqueDirecto();
+        bool enRangoToque = (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= distanciaInteraccion + 2.5f);
+
+        if ((jugadorEnRango || (toqueDirecto && enRangoToque)) && !abriendo)
         {
-            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered() || toqueDirecto)
             {
                 StartCoroutine(SecuenciaAbrirReja());
             }

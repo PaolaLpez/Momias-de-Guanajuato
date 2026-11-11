@@ -106,6 +106,34 @@ public class CompuertaSalidaNivel2 : MonoBehaviour
         return col.CompareTag("Player") || col.GetComponent<PlayerController>() != null || col.gameObject.name.Contains("Vigilante");
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 3.5f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 3.5f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         BuscarJugador();
@@ -120,25 +148,28 @@ public class CompuertaSalidaNivel2 : MonoBehaviour
         if (playerTransform != null)
         {
             float dist = Vector2.Distance(transform.position, playerTransform.position);
-            if (dist <= distanciaInteraccion)
+            if (dist <= distanciaInteraccion + 1.2f)
             {
                 jugadorEnRango = true;
             }
-            else if (dist > distanciaInteraccion + 1.5f)
+            else if (dist > distanciaInteraccion + 2.0f)
             {
                 jugadorEnRango = false;
             }
 
             // Escape automático al caminar directamente al umbral abierto
-            if (estaDesbloqueada && dist <= 3.2f)
+            if (estaDesbloqueada && dist <= 3.5f)
             {
                 CompletarNivel2();
                 return;
             }
         }
 
-        // Interacción por teclado (E, Barra Espaciadora o Enter)
-        if (jugadorEnRango && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+        bool toqueDirecto = ComprobarToqueDirecto();
+        bool enRangoToque = (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= distanciaInteraccion + 2.8f);
+
+        // Interacción por teclado o pantalla táctil
+        if ((jugadorEnRango || (toqueDirecto && enRangoToque)) && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered() || toqueDirecto))
         {
             if (estaDesbloqueada || (GeneradorPrincipalNivel2.Instance != null && GeneradorPrincipalNivel2.Instance.fasesRestauradas >= 3))
             {

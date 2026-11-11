@@ -751,6 +751,42 @@ public class MomiaNivel2Controller : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Reacción sonora inmediata de la momia ("sonido_momia.mp3") cuando se detecta voz en el micrófono físico o simulado.
+    /// </summary>
+    public void ReaccionarAVozMicrofono(Vector3 posicionVoz, float radio)
+    {
+        if (!Application.isPlaying || Time.timeScale == 0f) return;
+
+        ultimaPosicionSonido = posicionVoz;
+        ultimoSonidoEscuchado = "¡LA MOMIA ESCUCHÓ TU VOZ!";
+        timerInvestigacionRestante = 14.0f;
+        puntoBusquedaLocal = Vector2.zero;
+
+        // Sonido de alerta audible de la momia ("sonido_momia.mp3")
+        if (fuenteAudioPuntual != null)
+        {
+            AudioClip clip = clipCercaniaMomia != null ? clipCercaniaMomia : clipRugidoDeteccion;
+            if (clip != null)
+            {
+                fuenteAudioPuntual.pitch = Random.Range(0.94f, 1.04f);
+                fuenteAudioPuntual.PlayOneShot(clip, 0.95f);
+            }
+        }
+
+        GenerarOndaAcusticaMomia(transform.position + new Vector3(0f, 1.0f, 0f), 4.6f, new Color(1f, 0.22f, 0.15f, 0.90f));
+
+        if (estadoActual == EstadoMomia2.AcechandoEnOscuridad)
+        {
+            estadoActual = EstadoMomia2.AlertaAcusticaGrito;
+            timerAlertaGrito = 0.25f;
+        }
+        else if (estadoActual != EstadoMomia2.CazandoContactoLetal)
+        {
+            estadoActual = EstadoMomia2.InvestigandoSonido;
+        }
+    }
+
     private bool TieneRutaAbiertaSinRejasCerradas(Vector2 posOrigen, Vector2 posDestino)
     {
         if (!HayMuroORejaCerradaEntrePuntos(posOrigen, posDestino, 0.30f)) return true;

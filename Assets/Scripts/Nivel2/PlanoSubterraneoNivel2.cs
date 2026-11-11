@@ -23,6 +23,8 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
     private PlayerController playerScript;
     private Rigidbody2D playerRb;
     private float tiempoApertura = 0f;
+    private Rect ultimoBtnCerrarRect;
+    private Rect ultimoMarcoTotalRect;
 
     // Interruptores de fase y generador
     private InterruptorFusibleNivel2[] interruptores;
@@ -121,14 +123,41 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
     {
         BuscarJugador();
 
-        // Cierre receptivo EXCLUSIVAMENTE con tecla ESC (la tecla E queda deshabilitada para salir)
+        // Cierre receptivo con ESC, E, botón touch o pulsación directa en pantalla
         if (VisorPlanoAbierto)
         {
-            if (Time.unscaledTime - tiempoApertura > 0.12f)
+            if (Time.unscaledTime - tiempoApertura > 0.15f)
             {
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered())
                 {
                     CerrarVisorPlano();
+                    return;
+                }
+
+                // Cierre por toque en pantalla (botón de cerrar o toque en viñeta oscura fuera del plano)
+                if (Input.touchCount > 0)
+                {
+                    for (int i = 0; i < Input.touchCount; i++)
+                    {
+                        Touch t = Input.GetTouch(i);
+                        if (t.phase == TouchPhase.Began)
+                        {
+                            Vector2 guiTouch = new Vector2(t.position.x, Screen.height - t.position.y);
+                            if (ultimoBtnCerrarRect.Contains(guiTouch) || !ultimoMarcoTotalRect.Contains(guiTouch))
+                            {
+                                CerrarVisorPlano();
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (Input.GetMouseButtonDown(0))
+                {
+                    Vector2 guiMouse = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                    if (ultimoBtnCerrarRect.Contains(guiMouse) || !ultimoMarcoTotalRect.Contains(guiMouse))
+                    {
+                        CerrarVisorPlano();
+                    }
                 }
             }
         }
@@ -142,12 +171,15 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
         }
         else
         {
+            // Solo se permite abrir el plano si la jugadora está físicamente en el lugar correspondiente (frente a un mural)
+            if (!EstacionPlanoInteraccion.EsJugadorFrenteAEstacion()) return;
             AbrirVisorPlano();
         }
     }
 
     public void AbrirVisorPlano()
     {
+        if (!EstacionPlanoInteraccion.EsJugadorFrenteAEstacion()) return;
         VisorPlanoAbierto = true;
         tiempoApertura = Time.unscaledTime;
     }
@@ -499,6 +531,7 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
         float posX = (Screen.width - ancho) / 2f;
         float posY = (Screen.height - alto) / 2f;
         Rect marcoTotal = new Rect(posX, posY, ancho, alto);
+        ultimoMarcoTotalRect = marcoTotal;
 
         // 1. Oscurecimiento cinematográfico de fondo (elimina cualquier distracción)
         GUI.color = new Color(0.04f, 0.04f, 0.05f, 0.95f);
@@ -578,6 +611,7 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
 
         // Botón [✕ CERRAR] en forma de chapa de hierro forjado
         Rect btnCerrarRect = new Rect(posX + ancho - 145, posY + 20, 115, 36);
+        ultimoBtnCerrarRect = btnCerrarRect;
         GUI.color = new Color(0.18f, 0.15f, 0.13f, 1f);
         GUI.DrawTexture(btnCerrarRect, Texture2D.whiteTexture);
         DibujarBorde(btnCerrarRect, 2f, new Color(0.55f, 0.42f, 0.28f, 1f));
@@ -961,12 +995,35 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
 /// </summary>
 public class EstacionPlanoInteraccion : MonoBehaviour
 {
+    private static readonly List<EstacionPlanoInteraccion> todasLasEstaciones = new List<EstacionPlanoInteraccion>();
+
+    public static bool EsJugadorFrenteAEstacion()
+    {
+        for (int i = 0; i < todasLasEstaciones.Count; i++)
+        {
+            if (todasLasEstaciones[i] != null && todasLasEstaciones[i].jugadorCerca) return true;
+        }
+        return false;
+    }
+
     public string nombreSector = "Subsuelo";
     private bool jugadorCerca = false;
     private Transform playerTransform;
 
+    private void OnEnable()
+    {
+        if (!todasLasEstaciones.Contains(this)) todasLasEstaciones.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        todasLasEstaciones.Remove(this);
+        jugadorCerca = false;
+    }
+
     private void Start()
     {
+        if (!todasLasEstaciones.Contains(this)) todasLasEstaciones.Add(this);
         BuscarJugador();
     }
 
@@ -980,6 +1037,36 @@ public class EstacionPlanoInteraccion : MonoBehaviour
         }
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        float zDist = Mathf.Abs(Camera.main.transform.position.z);
+        Collider2D col = GetComponent<Collider2D>();
+        if (col == null) return false;
+
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector3 sp = new Vector3(t.position.x, t.position.y, zDist);
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+                    if (col.OverlapPoint(worldTap)) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 sp = new Vector3(Input.mousePosition.x, Input.mousePosition.y, zDist);
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+            if (col.OverlapPoint(worldTap)) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         BuscarJugador();
@@ -987,14 +1074,22 @@ public class EstacionPlanoInteraccion : MonoBehaviour
         if (playerTransform != null)
         {
             float dist = Vector2.Distance(transform.position, playerTransform.position);
-            jugadorCerca = (dist <= 2.8f);
+            jugadorCerca = (dist <= 2.5f);
+        }
+        else
+        {
+            jugadorCerca = false;
         }
 
-        if (jugadorCerca && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space)))
+        bool clicDirectoEnCartel = ComprobarToqueDirecto();
+
+        // El plano SOLO se abre si la jugadora está en el lugar correspondiente (frente al cartel mural)
+        // Y presiona el botón correspondiente: [E], botón táctil [E] ACCIÓN, o clic directo sobre el cartel
+        if (jugadorCerca && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || clicDirectoEnCartel))
         {
-            if (!PlanoSubterraneoNivel2.VisorPlanoAbierto && Time.timeScale > 0f)
+            if (PlanoSubterraneoNivel2.Instance != null && Time.timeScale > 0f)
             {
-                PlanoSubterraneoNivel2.Instance.AbrirVisorPlano();
+                PlanoSubterraneoNivel2.Instance.AlternarVisorPlano();
             }
         }
     }

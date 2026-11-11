@@ -60,26 +60,105 @@ public class EsconditeNivel2 : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void AsegurarJugador()
     {
-        if (jugadorEnRango && Input.GetKeyDown(KeyCode.E))
+        if (playerObj == null)
         {
-            if (!jugadorDentro)
+            if (PlayerController.Instance != null)
             {
-                EntrarEscondite();
+                playerObj = PlayerController.Instance.gameObject;
             }
             else
             {
+                playerObj = GameObject.FindGameObjectWithTag("Player");
+                if (playerObj == null) playerObj = GameObject.Find("Vigilante");
+            }
+            if (playerObj != null)
+            {
+                playerCol = playerObj.GetComponent<Collider2D>();
+                playerRb = playerObj.GetComponent<Rigidbody2D>();
+            }
+        }
+    }
+
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        float zDist = Mathf.Abs(Camera.main.transform.position.z);
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector3 sp = new Vector3(t.position.x, t.position.y, zDist);
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 sp = new Vector3(Input.mousePosition.x, Input.mousePosition.y, zDist);
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+        }
+        return false;
+    }
+
+    private void Update()
+    {
+        AsegurarJugador();
+
+        float distJugador = playerObj != null ? Vector2.Distance(transform.position, playerObj.transform.position) : 999f;
+        bool cerca = distJugador <= 3.2f || jugadorEnRango;
+        bool toque = ComprobarToqueDirecto();
+
+        if (jugadorDentro)
+        {
+            // Mantener al jugador bloqueado dentro del escondite y 100% invisible
+            if (playerObj != null)
+            {
+                playerObj.transform.position = transform.position + offsetJugadorDentro;
+                if (playerRb != null) playerRb.linearVelocity = Vector2.zero;
+            }
+            if (PlayerController.Instance != null)
+            {
+                PlayerController.Instance.estaEscondido = true;
+            }
+
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || TouchControlsManager.IsJumpTriggered() || toque)
+            {
                 SalirEscondite();
             }
+        }
+        else if ((cerca || toque) && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || toque))
+        {
+            EntrarEscondite();
         }
     }
 
     private void EntrarEscondite()
     {
+        AsegurarJugador();
         jugadorDentro = true;
-        if (playerRb != null) playerRb.linearVelocity = Vector2.zero;
-        if (playerSr != null) playerSr.enabled = false;
+
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.estaEscondido = true;
+        }
+
+        if (playerObj != null)
+        {
+            playerObj.transform.position = transform.position + offsetJugadorDentro;
+            if (playerRb != null) playerRb.linearVelocity = Vector2.zero;
+        }
         if (playerCol != null) playerCol.enabled = false;
 
         if (spriteCerrado != null && esconditeSr != null)
@@ -104,9 +183,19 @@ public class EsconditeNivel2 : MonoBehaviour
 
     public void SalirEscondite()
     {
+        AsegurarJugador();
         jugadorDentro = false;
-        if (playerSr != null) playerSr.enabled = true;
+
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.estaEscondido = false;
+        }
+
         if (playerCol != null) playerCol.enabled = true;
+        if (playerObj != null)
+        {
+            playerObj.transform.position = transform.position + new Vector3(0f, -0.65f, 0f);
+        }
 
         if (spriteAbierto != null && esconditeSr != null)
         {

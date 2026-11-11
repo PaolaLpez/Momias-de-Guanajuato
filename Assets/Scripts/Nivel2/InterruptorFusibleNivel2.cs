@@ -103,6 +103,35 @@ public class InterruptorFusibleNivel2 : MonoBehaviour
         return col.CompareTag("Player") || col.GetComponent<PlayerController>() != null || col.gameObject.name.Contains("Vigilante");
     }
 
+    private bool ComprobarToqueDirecto()
+    {
+        if (Camera.main == null) return false;
+
+        // Comprobar dedos táctiles en celular/tablet
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch t = Input.GetTouch(i);
+                if (t.phase == TouchPhase.Began)
+                {
+                    Vector2 worldTap = Camera.main.ScreenToWorldPoint(t.position);
+                    Collider2D col = GetComponent<Collider2D>();
+                    if (col != null && col.OverlapPoint(worldTap)) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 worldTap = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null && col.OverlapPoint(worldTap)) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 2.2f) return true;
+        }
+        return false;
+    }
+
     private void Update()
     {
         BuscarJugador();
@@ -110,13 +139,19 @@ public class InterruptorFusibleNivel2 : MonoBehaviour
         if (playerTransform != null && !estaActivado)
         {
             float dist = Vector2.Distance(transform.position, playerTransform.position);
-            if (dist <= 3.2f) jugadorEnRango = true;
-            else if (dist > 4.0f) jugadorEnRango = false;
+            if (dist <= 3.8f) jugadorEnRango = true;
+            else if (dist > 4.6f) jugadorEnRango = false;
         }
 
-        if (jugadorEnRango && !estaActivado && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space)))
+        bool toqueDirecto = ComprobarToqueDirecto();
+        bool puedeActivarPorDistancia = (playerTransform != null && Vector2.Distance(transform.position, playerTransform.position) <= 4.8f);
+
+        if (!estaActivado && (jugadorEnRango || (toqueDirecto && puedeActivarPorDistancia)))
         {
-            ActivarFusible();
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) || TouchControlsManager.IsInteractTriggered() || toqueDirecto)
+            {
+                ActivarFusible();
+            }
         }
     }
 
