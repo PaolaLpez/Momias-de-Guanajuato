@@ -11,6 +11,7 @@ public static class WebGLBuilder
     [MenuItem("Juego/🚀 Construir WebGL para itch.io (1 Clic)")]
     public static void ConstruirWebGLParaItch()
     {
+        AssetDatabase.Refresh();
         string projectPath = Directory.GetCurrentDirectory();
         string buildWebDir = Path.Combine(projectPath, "BuildWeb");
         string zipPath = Path.Combine(projectPath, "BuildWeb.zip");

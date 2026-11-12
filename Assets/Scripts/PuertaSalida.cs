@@ -238,42 +238,53 @@ public class PuertaSalida : MonoBehaviour
             Vector3 screenPos = cam.WorldToScreenPoint(transform.position + new Vector3(0, 1.8f, 0));
             if (screenPos.z > 0)
             {
-                float w = 295f;
-                float h = 32f;
-                Rect rect = new Rect(screenPos.x - w / 2, Screen.height - screenPos.y - h / 2, w, h);
-
-                bool tieneLlave = (playerScript != null && playerScript.tieneLlave) || 
-                                  (Level1Manager.Instance != null && Level1Manager.Instance.CurrentState == LevelState.KeyAcquired);
-
-                string texto;
-                if (!tieneLlave)
+                float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+                try
                 {
-                    texto = "<color=#FF6666>[Portón Cerrado - Falta Llave]</color>";
-                }
-                else if (EstaArriba())
-                {
-                    texto = "<color=#FFAA33>[Colócate a un lado del portón para abrir]</color>";
-                }
-                else if (!EstaAUnoDeLosLados())
-                {
-                    texto = "<color=#FFAA33>[Acércate a un costado para abrir]</color>";
-                }
-                else
-                {
-                    texto = "<color=#55FF55><b>[E] Abrir Portón de Escape</b></color>";
-                }
+                    Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                    float w = 295f;
+                    float h = 32f;
+                    float x = Mathf.Clamp(guiPos.x - w / 2f, 8f, vw - w - 8f);
+                    float y = Mathf.Clamp(guiPos.y - h / 2f, 8f, vh - h - 8f);
+                    Rect rect = new Rect(x, y, w, h);
 
-                GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.94f);
-                GUI.Box(rect, "");
-                GUI.color = Color.white;
+                    bool tieneLlave = (playerScript != null && playerScript.tieneLlave) || 
+                                      (Level1Manager.Instance != null && Level1Manager.Instance.CurrentState == LevelState.KeyAcquired);
 
-                GUIStyle style = new GUIStyle(GUI.skin.label);
-                style.fontSize = 11;
-                style.fontStyle = FontStyle.Bold;
-                style.alignment = TextAnchor.MiddleCenter;
-                style.richText = true;
+                    string texto;
+                    if (!tieneLlave)
+                    {
+                        texto = "<color=#FF6666>[Portón Cerrado - Falta Llave]</color>";
+                    }
+                    else if (EstaArriba())
+                    {
+                        texto = "<color=#FFAA33>[Colócate a un lado del portón para abrir]</color>";
+                    }
+                    else if (!EstaAUnoDeLosLados())
+                    {
+                        texto = "<color=#FFAA33>[Acércate a un costado para abrir]</color>";
+                    }
+                    else
+                    {
+                        texto = "<color=#55FF55><b>[E] Abrir Portón de Escape</b></color>";
+                    }
 
-                GUI.Label(rect, texto, style);
+                    GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.94f);
+                    GUI.Box(rect, "");
+                    GUI.color = Color.white;
+
+                    GUIStyle style = new GUIStyle(GUI.skin.label);
+                    style.fontSize = 11;
+                    style.fontStyle = FontStyle.Bold;
+                    style.alignment = TextAnchor.MiddleCenter;
+                    style.richText = true;
+
+                    GUI.Label(rect, texto, style);
+                }
+                finally
+                {
+                    ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+                }
             }
         }
     }

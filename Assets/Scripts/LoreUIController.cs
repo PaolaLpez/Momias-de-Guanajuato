@@ -461,36 +461,44 @@ public class LoreUIController : MonoBehaviour
     {
         if (!isPanelOpen) return;
 
-        float s = Mathf.Clamp(Screen.height / 540f, 1.0f, 2.0f);
-        InitStyles(s);
-
-        // 1. Fondo oscurecido en pantalla completa
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texFondoSombra);
-
-        // 2. Dimensiones responsivas de la nota tipo pergamino
-        float w = Mathf.Min(640f * s, Screen.width - 30f);
-        float h = Mathf.Min(370f * s, Screen.height - 30f);
-        Rect noteRect = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
-
-        // Borde decorativo
-        GUI.DrawTexture(new Rect(noteRect.x - 4 * s, noteRect.y - 4 * s, noteRect.width + 8 * s, noteRect.height + 8 * s), texBordeNota);
-        // Papel de pergamino
-        GUI.DrawTexture(noteRect, texPapelNota);
-
-        // Si tocan la pantalla fuera del pergamino (fondo oscuro), cerrar la nota con comodidad
-        if (Event.current.type == EventType.MouseDown && !noteRect.Contains(Event.current.mousePosition) && (Time.unscaledTime - openTime) >= 0.35f)
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 740f, 430f);
+        try
         {
-            CloseLorePanel();
-            return;
+            float s = 1f;
+            InitStyles(s);
+
+            // 1. Fondo oscurecido en pantalla completa
+            GUI.DrawTexture(new Rect(0, 0, vw, vh), texFondoSombra);
+
+            // 2. Dimensiones responsivas de la nota tipo pergamino
+            float w = Mathf.Min(640f * s, vw - 24f);
+            float h = Mathf.Min(370f * s, vh - 24f);
+            Rect noteRect = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
+
+            // Borde decorativo
+            GUI.DrawTexture(new Rect(noteRect.x - 4 * s, noteRect.y - 4 * s, noteRect.width + 8 * s, noteRect.height + 8 * s), texBordeNota);
+            // Papel de pergamino
+            GUI.DrawTexture(noteRect, texPapelNota);
+
+            // Si tocan la pantalla fuera del pergamino (fondo oscuro), cerrar la nota con comodidad
+            if (Event.current.type == EventType.MouseDown && !noteRect.Contains(Event.current.mousePosition) && (Time.unscaledTime - openTime) >= 0.35f)
+            {
+                CloseLorePanel();
+                return;
+            }
+
+            if (isCatalogMode)
+            {
+                RenderCatalogMode(noteRect, s);
+            }
+            else
+            {
+                RenderReaderMode(noteRect, s);
+            }
         }
-
-        if (isCatalogMode)
+        finally
         {
-            RenderCatalogMode(noteRect, s);
-        }
-        else
-        {
-            RenderReaderMode(noteRect, s);
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 

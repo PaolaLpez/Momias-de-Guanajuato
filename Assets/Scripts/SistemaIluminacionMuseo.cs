@@ -155,26 +155,31 @@ public class SistemaIluminacionMuseo : MonoBehaviour
     {
         if (Level1Manager.Instance != null && (Level1Manager.Instance.IsNivelCompletado || Level1Manager.Instance.IsJuegoTerminado)) return;
 
-        // Factor de escala responsivo sincronizado con Level1Manager
-        float s = Mathf.Clamp(Screen.height / 540f, 1.0f, 2.2f);
-
-        float btnW = 180f * s;
-        float btnH = 26f * s;
-        float pad = 10f * s;
-        float boxH = 64f * s;
-        float rectY = pad + boxH + 6f * s;
-        Rect rect = new Rect(Screen.width - btnW - pad, rectY, btnW, btnH);
-
-        string label = lucesEncendidas ? "[L] Luces: <color=#FFD700>ENCENDIDAS</color>" : "[L] Luces: <color=#FFAAAA>APAGADAS</color>";
-
-        GUIStyle style = new GUIStyle(GUI.skin.button);
-        style.fontSize = Mathf.RoundToInt(11 * s);
-        style.fontStyle = FontStyle.Bold;
-        style.richText = true;
-
-        if (GUI.Button(rect, label, style))
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 920f, 520f);
+        try
         {
-            AlternarLuces();
+            float btnW = 180f;
+            float btnH = 26f;
+            float pad = 10f;
+            float boxH = 64f;
+            float rectY = pad + boxH + 6f;
+            Rect rect = new Rect(vw - btnW - pad, rectY, btnW, btnH);
+
+            string label = lucesEncendidas ? "[L] Luces: <color=#FFD700>ENCENDIDAS</color>" : "[L] Luces: <color=#FFAAAA>APAGADAS</color>";
+
+            GUIStyle style = new GUIStyle(GUI.skin.button);
+            style.fontSize = 11;
+            style.fontStyle = FontStyle.Bold;
+            style.richText = true;
+
+            if (GUI.Button(rect, label, style))
+            {
+                AlternarLuces();
+            }
+        }
+        finally
+        {
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 }
