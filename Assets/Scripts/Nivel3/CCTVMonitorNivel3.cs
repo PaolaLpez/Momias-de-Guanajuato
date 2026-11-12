@@ -198,91 +198,97 @@ public class CCTVMonitorNivel3 : MonoBehaviour
     {
         if (!monitorAbierto) return;
 
-        // Overlay cinematográfico de monitor de seguridad CRT
-        float w = Screen.width;
-        float h = Screen.height;
-
-        // Marco sutil de pantalla CRT en bordes (arriba y abajo)
-        Color colFrame = new Color(0.04f, 0.06f, 0.08f, 0.78f);
-        GUI.color = colFrame;
-        GUI.DrawTexture(new Rect(0, 0, w, 58), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(0, h - 52, w, 52), Texture2D.whiteTexture);
-        // Tinte de señal de seguridad verdoso translúcido
-        GUI.color = new Color(0.05f, 0.25f, 0.15f, 0.08f);
-        GUI.DrawTexture(new Rect(0, 58, w, h - 110), Texture2D.whiteTexture);
-        GUI.color = Color.white;
-
-        // --- BARRA SUPERIOR ---
-        // Indicador REC
-        if (recVisible)
+        ResponsiveGUIHelper.BeginScaledGUI(out float w, out float h, out Matrix4x4 prevMatrix, 1000f, 560f);
+        try
         {
-            GUIStyle recStyle = new GUIStyle(GUI.skin.label)
+            // Marco sutil de pantalla CRT en bordes (arriba y abajo)
+            Color colFrame = new Color(0.04f, 0.06f, 0.08f, 0.78f);
+            GUI.color = colFrame;
+            GUI.DrawTexture(new Rect(0, 0, w, 58), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, h - 52, w, 52), Texture2D.whiteTexture);
+            // Tinte de señal de seguridad verdoso translúcido
+            GUI.color = new Color(0.05f, 0.25f, 0.15f, 0.08f);
+            GUI.DrawTexture(new Rect(0, 58, w, h - 110), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+
+            // --- BARRA SUPERIOR ---
+            // Indicador REC
+            if (recVisible)
             {
-                fontSize = 15,
+                GUIStyle recStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 15,
+                    fontStyle = FontStyle.Bold,
+                    normal = { textColor = Color.red }
+                };
+                GUI.Label(new Rect(20, 16, 80, 26), "● REC", recStyle);
+            }
+
+            // Selector de Canales (Botones 1, 2, 3, 4 en la esquina derecha superior)
+            float btnW = 95f;
+            float startX = w - 420f;
+            for (int i = 1; i <= 4; i++)
+            {
+                string label = (i == 1 ? "CAM 1" : i == 2 ? "CAM 2" : i == 3 ? "CAM 3" : "CAM 4");
+                if (i == camaraActual) label = "▶ " + label + " ◀";
+
+                if (GUI.Button(new Rect(startX + (i - 1) * (btnW + 6), 12, btnW, 34), label))
+                {
+                    CambiarCamara(i);
+                }
+            }
+
+            // Título de la cámara en vivo (espacio dinámico sin encimarse)
+            string titCam = camaraActual == 1 ? "CAM 01: SALA QUIRÚRGICA (CAMILLAS)" :
+                            camaraActual == 2 ? "CAM 02: LABORATORIO Y REACTIVOS" :
+                            camaraActual == 3 ? "CAM 03: CÁMARAS FRÍAS DE MORGUE" :
+                                                "CAM 04: CASETA Y PASILLOS NORTE";
+
+            GUIStyle titStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Color.red }
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = new Color(0.2f, 0.95f, 0.5f) }
             };
-            GUI.Label(new Rect(24, 16, 80, 26), "● REC", recStyle);
-        }
+            float titX = 104f;
+            float titW = Mathf.Max(200f, startX - titX - 10f);
+            GUI.Label(new Rect(titX, 16, titW, 26), titCam + " [EN VIVO]", titStyle);
 
-        // Título de la cámara en vivo
-        string titCam = camaraActual == 1 ? "CAM 01: SALA QUIRÚRGICA (CAMILLAS)" :
-                        camaraActual == 2 ? "CAM 02: LABORATORIO Y REACTIVOS" :
-                        camaraActual == 3 ? "CAM 03: CÁMARAS FRÍAS DE MORGUE" :
-                                            "CAM 04: CASETA Y PASILLOS NORTE";
-
-        GUIStyle titStyle = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 14,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = new Color(0.2f, 0.95f, 0.5f) }
-        };
-        GUI.Label(new Rect((w - 460) * 0.5f, 16, 460, 26), titCam + " [EN VIVO]", titStyle);
-
-        // Selector de Canales (Botones 1, 2, 3, 4 en la esquina derecha superior)
-        float btnW = 95f;
-        float startX = w - 430f;
-        for (int i = 1; i <= 4; i++)
-        {
-            string label = (i == 1 ? "CAM 1" : i == 2 ? "CAM 2" : i == 3 ? "CAM 3" : "CAM 4");
-            if (i == camaraActual) label = "▶ " + label + " ◀";
-
-            if (GUI.Button(new Rect(startX + (i - 1) * (btnW + 6), 12, btnW, 34), label))
+            // --- RETÍCULA Y MIRA DE CÁMARA EN EL CENTRO ---
+            GUIStyle miraStyle = new GUIStyle(GUI.skin.label)
             {
-                CambiarCamara(i);
+                fontSize = 24,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = new Color(0.2f, 0.9f, 0.5f, 0.35f) }
+            };
+            GUI.Label(new Rect((w - 100) * 0.5f, (h - 100) * 0.5f, 100, 100), "┼", miraStyle);
+
+            // --- BARRA INFERIOR ---
+            bool g1Despierta = ControladorDespertarMomiasNivel3.Instance != null && ControladorDespertarMomiasNivel3.Instance.gemela1Despierta;
+            bool g2Despierta = ControladorDespertarMomiasNivel3.Instance != null && ControladorDespertarMomiasNivel3.Instance.gemela2Despierta;
+
+            string telemetria = "MOMIA 1: " + (g1Despierta ? "<color=red>ACECHANDO</color>" : "<color=green>EN CAMILLA</color>") +
+                                "  |  MOMIA 2: " + (g2Despierta ? "<color=red>PATRULLANDO</color>" : "<color=green>EN CAMILLA</color>") +
+                                "  |  ESCORPIONES: " + (g2Despierta ? "<color=orange>ACTIVOS EN DRENAJES</color>" : "<color=gray>INACTIVOS</color>");
+
+            GUIStyle infoStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
+                normal = { textColor = new Color(0.85f, 0.92f, 0.95f) }
+            };
+            GUI.Label(new Rect(20, h - 42, Mathf.Max(260f, w - 260f), 30), telemetria, infoStyle);
+
+            if (GUI.Button(new Rect(w - 226, h - 44, 210, 36), "CERRAR MONITOR [ESC]"))
+            {
+                CerrarMonitor();
             }
         }
-
-        // --- RETÍCULA Y MIRA DE CÁMARA EN EL CENTRO ---
-        GUIStyle miraStyle = new GUIStyle(GUI.skin.label)
+        finally
         {
-            fontSize = 24,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = new Color(0.2f, 0.9f, 0.5f, 0.35f) }
-        };
-        GUI.Label(new Rect((w - 100) * 0.5f, (h - 100) * 0.5f, 100, 100), "┼", miraStyle);
-
-        // --- BARRA INFERIOR ---
-        bool g1Despierta = ControladorDespertarMomiasNivel3.Instance != null && ControladorDespertarMomiasNivel3.Instance.gemela1Despierta;
-        bool g2Despierta = ControladorDespertarMomiasNivel3.Instance != null && ControladorDespertarMomiasNivel3.Instance.gemela2Despierta;
-
-        string telemetria = "MOMIA 1: " + (g1Despierta ? "<color=red>ACECHANDO</color>" : "<color=green>EN CAMILLA</color>") +
-                            "  |  MOMIA 2: " + (g2Despierta ? "<color=red>PATRULLANDO</color>" : "<color=green>EN CAMILLA</color>") +
-                            "  |  ESCORPIONES: " + (g2Despierta ? "<color=orange>ACTIVOS EN DRENAJES</color>" : "<color=gray>INACTIVOS</color>");
-
-        GUIStyle infoStyle = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 12,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleLeft,
-            normal = { textColor = new Color(0.85f, 0.92f, 0.95f) }
-        };
-        GUI.Label(new Rect(24, h - 42, 600, 30), telemetria, infoStyle);
-
-        if (GUI.Button(new Rect(w - 230, h - 44, 210, 36), "CERRAR MONITOR [ESC]"))
-        {
-            CerrarMonitor();
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 }

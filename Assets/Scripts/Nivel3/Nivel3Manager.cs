@@ -707,129 +707,137 @@ public class Nivel3Manager : MonoBehaviour
 
     private void OnGUI()
     {
-        // 0. Prioridad absoluta: Jumpscare aterrador y Game Over
-        if (jumpscareActivado)
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 860f, 480f);
+        try
         {
-            DibujarSecuenciaJumpscareYGameOver();
-            return;
-        }
-
-        // Prioridad: Modal de Victoria épico y espeluznante
-        if (NivelCompletado)
-        {
-            DibujarModalVictoria();
-            return;
-        }
-
-        // Prioridad: Modal de Configuración y Monitoreo de Volumen (ESC)
-        if (menuConfiguracionAbierto)
-        {
-            DibujarModalConfiguracionJuego();
-            return;
-        }
-
-        // Viñeta cinematográfica de terror en los bordes de la pantalla
-        DibujarVinetaTerrorPantalla();
-
-        // 1. Efecto visual de veneno (pantalla verdosa parpadeante)
-        if (intensidadVeneno > 0.05f)
-        {
-            Color colVeneno = new Color(0.1f, 0.6f, 0.15f, intensidadVeneno * 0.35f);
-            GUI.color = colVeneno;
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = Color.white;
-        }
-
-        // 2. HUD Superior: Libreta de Cifras + Reloj + Barra de Vida (Oculto si el monitor CCTV está abierto)
-        bool cctvAbierto = CCTVMonitorNivel3.Instance != null && CCTVMonitorNivel3.Instance.monitorAbierto;
-        if (!cctvAbierto)
-        {
-            DibujarHUDSuperior();
-        }
-
-        // 3. Banner de Avisos de Ruido
-        if (timerAvisoRuido > 0f && !mostrarBannerDespertar)
-        {
-            float w = 520f;
-            float h = 34f;
-            Rect r = new Rect((Screen.width - w) * 0.5f, 75f, w, h);
-            GUI.Box(r, "");
-            GUIStyle alStyle = new GUIStyle(GUI.skin.label)
+            // 0. Prioridad absoluta: Jumpscare aterrador y Game Over
+            if (jumpscareActivado)
             {
-                fontSize = 13,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = new Color(1f, 0.3f, 0.3f) }
-            };
-            GUI.Label(r, "⚠ " + avisoRuidoTexto + " ⚠", alStyle);
-        }
+                DibujarSecuenciaJumpscareYGameOver(vw, vh);
+                return;
+            }
 
-        // 3.1 Banner Tenebroso: Ambas momias despiertas + Escorpiones
-        if (mostrarBannerDespertar && timerBannerDespertar > 0f)
-        {
-            DibujarLetreroTenebrosoDespertar();
-        }
-
-        // 4. Modal de Ficha Forense / Nota encontrada
-        if (timerModalNota > 0f)
-        {
-            float nw = 460f;
-            float nh = 130f;
-            Rect nr = new Rect((Screen.width - nw) * 0.5f, Screen.height - 180f, nw, nh);
-            GUI.Box(nr, "");
-            GUIStyle notaStyle = new GUIStyle(GUI.skin.label)
+            // Prioridad: Modal de Victoria épico y espeluznante
+            if (NivelCompletado)
             {
-                fontSize = 13,
-                wordWrap = true,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = new Color(0.95f, 0.95f, 0.8f) }
-            };
-            GUI.Label(new Rect(nr.x + 15, nr.y + 10, nw - 30, nh - 20), textoModalNota, notaStyle);
-        }
+                DibujarModalVictoria(vw, vh);
+                return;
+            }
 
-        // 5. Barra de progreso al forzar gaveta
-        if (progresoAccion > 0f)
-        {
-            float bw = 320f;
-            float bh = 42f;
-            Rect br = new Rect((Screen.width - bw) * 0.5f, Screen.height * 0.55f, bw, bh);
-            GUI.Box(br, "");
-            GUI.Label(new Rect(br.x, br.y + 4, bw, 18), etiquetaProgreso, new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter });
-
-            float barraW = (bw - 20) * progresoAccion;
-            GUI.color = Color.cyan;
-            GUI.DrawTexture(new Rect(br.x + 10, br.y + 24, barraW, 10), Texture2D.whiteTexture);
-            GUI.color = Color.white;
-        }
-
-        // 6. Prompt de interacción en el centro inferior
-        if (!string.IsNullOrEmpty(promptInteraccionTexto) && progresoAccion <= 0f)
-        {
-            GUIStyle pStyle = new GUIStyle(GUI.skin.box)
+            // Prioridad: Modal de Configuración y Monitoreo de Volumen (ESC)
+            if (menuConfiguracionAbierto)
             {
-                fontSize = 14,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = Color.yellow }
-            };
-            float pw = Mathf.Min(540f, Screen.width - 30f);
-            GUI.Box(new Rect((Screen.width - pw) * 0.5f, Screen.height - 44, pw, 34), promptInteraccionTexto, pStyle);
-        }
+                DibujarModalConfiguracionJuego(vw, vh);
+                return;
+            }
 
-        // 7. Pie de controles discreto con atajo de configuración (como en Nivel 2)
-        GUIStyle controlStyle = new GUIStyle(GUI.skin.label)
+            // Viñeta cinematográfica de terror en los bordes de la pantalla
+            DibujarVinetaTerrorPantalla(vw, vh);
+
+            // 1. Efecto visual de veneno (pantalla verdosa parpadeante)
+            if (intensidadVeneno > 0.05f)
+            {
+                Color colVeneno = new Color(0.1f, 0.6f, 0.15f, intensidadVeneno * 0.35f);
+                GUI.color = colVeneno;
+                GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
+                GUI.color = Color.white;
+            }
+
+            // 2. HUD Superior: Libreta de Cifras + Reloj + Barra de Vida (Oculto si el monitor CCTV está abierto)
+            bool cctvAbierto = CCTVMonitorNivel3.Instance != null && CCTVMonitorNivel3.Instance.monitorAbierto;
+            if (!cctvAbierto)
+            {
+                DibujarHUDSuperior(vw, vh);
+            }
+
+            // 3. Banner de Avisos de Ruido
+            if (timerAvisoRuido > 0f && !mostrarBannerDespertar)
+            {
+                float w = Mathf.Min(520f, vw - 24f);
+                float h = 34f;
+                Rect r = new Rect((vw - w) * 0.5f, 80f, w, h);
+                GUI.Box(r, "");
+                GUIStyle alStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 13,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter,
+                    normal = { textColor = new Color(1f, 0.3f, 0.3f) }
+                };
+                GUI.Label(r, "⚠ " + avisoRuidoTexto + " ⚠", alStyle);
+            }
+
+            // 3.1 Banner Tenebroso: Ambas momias despiertas + Escorpiones
+            if (mostrarBannerDespertar && timerBannerDespertar > 0f)
+            {
+                DibujarLetreroTenebrosoDespertar(vw, vh);
+            }
+
+            // 4. Modal de Ficha Forense / Nota encontrada
+            if (timerModalNota > 0f)
+            {
+                float nw = Mathf.Min(500f, vw - 24f);
+                float nh = 135f;
+                Rect nr = new Rect((vw - nw) * 0.5f, vh - 185f, nw, nh);
+                GUI.Box(nr, "");
+                GUIStyle notaStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 13,
+                    wordWrap = true,
+                    alignment = TextAnchor.MiddleCenter,
+                    normal = { textColor = new Color(0.95f, 0.95f, 0.8f) }
+                };
+                GUI.Label(new Rect(nr.x + 15, nr.y + 10, nw - 30, nh - 20), textoModalNota, notaStyle);
+            }
+
+            // 5. Barra de progreso al forzar gaveta
+            if (progresoAccion > 0f)
+            {
+                float bw = Mathf.Min(320f, vw - 24f);
+                float bh = 42f;
+                Rect br = new Rect((vw - bw) * 0.5f, vh * 0.55f, bw, bh);
+                GUI.Box(br, "");
+                GUI.Label(new Rect(br.x, br.y + 4, bw, 18), etiquetaProgreso, new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter });
+
+                float barraW = (bw - 20) * progresoAccion;
+                GUI.color = Color.cyan;
+                GUI.DrawTexture(new Rect(br.x + 10, br.y + 24, barraW, 10), Texture2D.whiteTexture);
+                GUI.color = Color.white;
+            }
+
+            // 6. Prompt de interacción en el centro inferior
+            if (!string.IsNullOrEmpty(promptInteraccionTexto) && progresoAccion <= 0f)
+            {
+                GUIStyle pStyle = new GUIStyle(GUI.skin.box)
+                {
+                    fontSize = 14,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter,
+                    normal = { textColor = Color.yellow }
+                };
+                float pw = Mathf.Min(540f, vw - 30f);
+                GUI.Box(new Rect((vw - pw) * 0.5f, vh - 46f, pw, 34f), promptInteraccionTexto, pStyle);
+            }
+
+            // 7. Pie de controles discreto con atajo de configuración (como en Nivel 2)
+            GUIStyle controlStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 11,
+                alignment = TextAnchor.MiddleLeft,
+                richText = true
+            };
+            controlStyle.normal.textColor = new Color(0.70f, 0.74f, 0.80f, 0.85f);
+            GUI.Label(new Rect(14f, vh - 18f, vw - 28f, 16f),
+                "<color=#888888>WASD: Mover | Shift: Correr | Espacio: Saltar | [TAB] Monitor CCTV | [ESC] Configuración y Audio</color>",
+                controlStyle);
+        }
+        finally
         {
-            fontSize = 11,
-            alignment = TextAnchor.MiddleLeft,
-            richText = true
-        };
-        controlStyle.normal.textColor = new Color(0.70f, 0.74f, 0.80f, 0.85f);
-        GUI.Label(new Rect(14f, Screen.height - 18f, Screen.width - 28f, 16f),
-            "<color=#888888>WASD: Mover | Shift: Correr | Espacio: Saltar | [TAB] Monitor CCTV | [ESC] Configuración y Audio</color>",
-            controlStyle);
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+        }
     }
 
-    private void DibujarVinetaTerrorPantalla()
+    private void DibujarVinetaTerrorPantalla(float vw, float vh)
     {
         if (texVinetaTerror == null)
         {
@@ -881,13 +889,13 @@ public class Nivel3Manager : MonoBehaviour
 
         Color prevColor = GUI.color;
         GUI.color = (pulso > 0.05f) ? new Color(1f, 0.15f, 0.15f, 0.90f + pulso) : Color.white;
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texVinetaTerror);
+        GUI.DrawTexture(new Rect(0, 0, vw, vh), texVinetaTerror);
         GUI.color = prevColor;
     }
 
-    private void DibujarHUDSuperior()
+    private void DibujarHUDSuperior(float vw, float vh)
     {
-        float totalW = Screen.width;
+        float totalW = vw;
         float margen = 14f;
         float gap = 10f;
         float h = 66f;
@@ -1006,11 +1014,11 @@ public class Nivel3Manager : MonoBehaviour
         GUI.Label(new Rect(rDer.x + 10f, rDer.y + 38f, rDer.width - 20f, 16f), estadoG2, amStyle);
     }
 
-    private void DibujarLetreroTenebrosoDespertar()
+    private void DibujarLetreroTenebrosoDespertar(float vw, float vh)
     {
-        float w = Mathf.Min(860f, Screen.width - 40f);
+        float w = Mathf.Min(860f, vw - 40f);
         float h = 105f;
-        float x = (Screen.width - w) * 0.5f;
+        float x = (vw - w) * 0.5f;
         float y = 85f;
 
         float pulso = Mathf.PingPong(Time.time * 4f, 1f);
@@ -1057,7 +1065,7 @@ public class Nivel3Manager : MonoBehaviour
         GUI.Label(new Rect(x + 10f, y + 72f, w - 20f, 20f), "Camilla Central: Cifra 1 | Lab de Reactivos: Cifra 2 | Gavetas de Morgue: Cifra 3", stylePista);
     }
 
-    private void DibujarSecuenciaJumpscareYGameOver()
+    private void DibujarSecuenciaJumpscareYGameOver(float vw, float vh)
     {
         // FASE 1 (0 a 1.95s): Jumpscare violento con AMBAS momias de frente abalanzándose hacia la cámara
         if (tiempoJumpscare < DURACION_JUMPSCARE)
@@ -1071,7 +1079,7 @@ public class Nivel3Manager : MonoBehaviour
 
             Color prevColor = GUI.color;
             GUI.color = colorFondo;
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
             GUI.color = prevColor;
 
             if (texMomiaFrente1 == null || texMomiaFrente2 == null)
@@ -1085,12 +1093,12 @@ public class Nivel3Manager : MonoBehaviour
 
             // Escala frontal impactante: de 0.85x a 2.45x
             float multiplicadorAlto = Mathf.Lerp(0.85f, 2.45f, curvaImpacto);
-            float altoImg = Screen.height * multiplicadorAlto;
+            float altoImg = vh * multiplicadorAlto;
 
             float intensidadShake = Mathf.Lerp(45f, 15f, t);
             float shakeX = Mathf.Sin(tiempoJumpscare * 95f) * intensidadShake + Random.Range(-12f, 12f);
             float shakeY = Mathf.Cos(tiempoJumpscare * 110f) * intensidadShake + Random.Range(-12f, 12f);
-            float focoRostroY = Mathf.Lerp((Screen.height - altoImg) * 0.5f, -altoImg * 0.08f, curvaImpacto);
+            float focoRostroY = Mathf.Lerp((vh - altoImg) * 0.5f, -altoImg * 0.08f, curvaImpacto);
 
             if (flashSangre && Random.value > 0.45f)
             {
@@ -1098,7 +1106,7 @@ public class Nivel3Manager : MonoBehaviour
             }
 
             // Separación de las dos momias: convergen desde los lados hacia el centro
-            float separacionX = Mathf.Lerp(Screen.width * 0.24f, Screen.width * 0.16f, curvaImpacto);
+            float separacionX = Mathf.Lerp(vw * 0.24f, vw * 0.16f, curvaImpacto);
 
             // 1. GEMELA 1 (DE FRENTE - IZQUIERDA)
             if (texMomiaFrente1 != null)
@@ -1106,7 +1114,7 @@ public class Nivel3Manager : MonoBehaviour
                 float aspect1 = (float)texMomiaFrente1.width / Mathf.Max(1f, texMomiaFrente1.height);
                 float ancho1 = altoImg * aspect1;
                 Rect rectG1 = new Rect(
-                    (Screen.width * 0.5f) - separacionX - (ancho1 * 0.5f) + shakeX,
+                    (vw * 0.5f) - separacionX - (ancho1 * 0.5f) + shakeX,
                     focoRostroY + shakeY + Mathf.Sin(tiempoJumpscare * 45f) * 8f,
                     ancho1,
                     altoImg
@@ -1121,7 +1129,7 @@ public class Nivel3Manager : MonoBehaviour
                 float aspect2 = (float)texG2.width / Mathf.Max(1f, texG2.height);
                 float ancho2 = altoImg * aspect2;
                 Rect rectG2 = new Rect(
-                    (Screen.width * 0.5f) + separacionX - (ancho2 * 0.5f) - shakeX * 0.7f,
+                    (vw * 0.5f) + separacionX - (ancho2 * 0.5f) - shakeX * 0.7f,
                     focoRostroY + shakeY - Mathf.Cos(tiempoJumpscare * 45f) * 8f,
                     ancho2,
                     altoImg
@@ -1134,30 +1142,30 @@ public class Nivel3Manager : MonoBehaviour
             // Bordes ensangrentados pulsantes
             Color bordeSangre = new Color(0.85f, 0.05f, 0.05f, 0.65f);
             GUI.color = bordeSangre;
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, 36f), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(0, Screen.height - 36f, Screen.width, 36f), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(0, 0, 36f, Screen.height), Texture2D.whiteTexture);
-            GUI.DrawTexture(new Rect(Screen.width - 36f, 0, 36f, Screen.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, 0, vw, 36f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, vh - 36f, vw, 36f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, 0, 36f, vh), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(vw - 36f, 0, 36f, vh), Texture2D.whiteTexture);
             GUI.color = prevColor;
             return;
         }
 
         // FASE 2: Pantalla Game Over estilizada y aterradora
-        DibujarModalGameOver();
+        DibujarModalGameOver(vw, vh);
     }
 
-    private void DibujarModalVictoria()
+    private void DibujarModalVictoria(float vw, float vh)
     {
         CargarRecursosVictoria();
         ReproducirRisaVictoria();
 
         // Fondo de terror abisal profundo
         GUI.color = new Color(0.01f, 0.02f, 0.03f, 0.97f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
+        GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
 
-        float w = Mathf.Min(500f, Screen.width - 24f);
-        float h = Mathf.Min(400f, Screen.height - 24f);
-        Rect r = new Rect((Screen.width - w) * 0.5f, (Screen.height - h) * 0.5f, w, h);
+        float w = Mathf.Min(500f, vw - 24f);
+        float h = Mathf.Min(400f, vh - 24f);
+        Rect r = new Rect((vw - w) * 0.5f, (vh - h) * 0.5f, w, h);
 
         float pulso = Mathf.PingPong(Time.unscaledTime * 3f, 1f);
 
@@ -1298,15 +1306,15 @@ public class Nivel3Manager : MonoBehaviour
         }
     }
 
-    private void DibujarModalGameOver()
+    private void DibujarModalGameOver(float vw, float vh)
     {
         // Fondo oscuro con viñeta de sangre
         GUI.color = new Color(0.04f, 0.01f, 0.01f, 0.96f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
+        GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
 
-        float w = 560f;
-        float h = 290f;
-        Rect r = new Rect((Screen.width - w) * 0.5f, (Screen.height - h) * 0.5f, w, h);
+        float w = Mathf.Min(560f, vw - 24f);
+        float h = Mathf.Min(295f, vh - 24f);
+        Rect r = new Rect((vw - w) * 0.5f, (vh - h) * 0.5f, w, h);
 
         // Marco ensangrentado
         GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.95f);
@@ -1392,15 +1400,15 @@ public class Nivel3Manager : MonoBehaviour
     /// Menú de Configuración y Monitoreo de Audio (accesible con ESC, idéntico al Nivel 2).
     /// Permite calibrar el volumen del juego, ambiente y SFX, además de monitorear el nivel acústico.
     /// </summary>
-    private void DibujarModalConfiguracionJuego()
+    private void DibujarModalConfiguracionJuego(float vw, float vh)
     {
         // Fondo oscuro semitransparente que cubre la pantalla
-        DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.82f));
+        DibujarRectanguloColor(new Rect(0f, 0f, vw, vh), new Color(0f, 0f, 0f, 0.82f));
 
-        float w = 480f;
-        float h = 330f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = (Screen.height - h) * 0.5f;
+        float w = Mathf.Min(480f, vw - 24f);
+        float h = Mathf.Min(330f, vh - 24f);
+        float x = (vw - w) * 0.5f;
+        float y = (vh - h) * 0.5f;
 
         // Caja principal con marco dorado
         DibujarCajaConBorde(new Rect(x, y, w, h),

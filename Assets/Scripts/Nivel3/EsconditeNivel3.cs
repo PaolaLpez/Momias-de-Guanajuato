@@ -190,18 +190,26 @@ public class EsconditeNivel3 : MonoBehaviour
     {
         if (ocupado)
         {
-            float w = 460f;
-            float h = 42f;
-            Rect r = new Rect((Screen.width - w) * 0.5f, Screen.height - 65f, w, h);
-            GUI.Box(r, "");
-            GUIStyle s = new GUIStyle(GUI.skin.label)
+            ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 860f, 480f);
+            try
             {
-                fontSize = 13,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.MiddleCenter,
-                normal = { textColor = new Color(0.35f, 0.95f, 0.55f) }
-            };
-            GUI.Label(r, "🔒 OCULTO EN: " + nombreEscondite + " [E / ESPACIO para salir]", s);
+                float w = Mathf.Min(460f, vw - 24f);
+                float h = 42f;
+                Rect r = new Rect((vw - w) * 0.5f, vh - 65f, w, h);
+                GUI.Box(r, "");
+                GUIStyle s = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 13,
+                    fontStyle = FontStyle.Bold,
+                    alignment = TextAnchor.MiddleCenter,
+                    normal = { textColor = new Color(0.35f, 0.95f, 0.55f) }
+                };
+                GUI.Label(r, "🔒 OCULTO EN: " + nombreEscondite + " [E / ESPACIO para salir]", s);
+            }
+            finally
+            {
+                ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+            }
         }
     }
 
