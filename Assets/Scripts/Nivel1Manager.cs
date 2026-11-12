@@ -218,144 +218,156 @@ public class Nivel1Manager : MonoBehaviour
         BuscarReferencias();
         InitStyles();
 
-        // 1. HUD SUPERIOR: VIGILANTE (IZQUIERDA)
-        float barraW = 120f;
-        float barraH = 10f;
-
-        GUI.Box(new Rect(10, 10, 210, 60), "", boxStyle);
-        GUI.Label(new Rect(18, 12, 190, 16), "VIGILANTE", headerStyle);
-        float pctVigilante = player != null ? Mathf.Clamp01(player.vidaActual / player.vidaMaxima) : 0f;
-        GUI.DrawTexture(new Rect(18, 30, barraW, barraH), texFondoBarra);
-        GUI.DrawTexture(new Rect(18, 30, barraW * pctVigilante, barraH), texVidaVigilante);
-        GUI.Label(new Rect(144, 27, 60, 16), $"{(int)(pctVigilante * 100)}%", textStyle);
-
-        string objText = (player != null && player.tieneLlave) ? "<color=#FFD700>✓ Llave lista (Ve a Cripta)</color>" : "Busca la llave en Galería";
-        GUI.Label(new Rect(18, 44, 190, 16), "Obj: " + objText, textStyle);
-
-        // 2. RELOJ DEL MUSEO (CENTRO SUPERIOR: 12:00 AM A 1:00 AM)
-        float relojW = 230f;
-        float relojH = 50f;
-        Rect relojRect = new Rect((Screen.width - relojW) / 2f, 10f, relojW, relojH);
-        GUI.Box(relojRect, "", boxStyle);
-
-        bool tiempoPoco = (duracionNivelSegundos - tiempoTranscurrido) < 45f;
-        string colorHora = tiempoPoco ? "#FF4444" : "#FFD700";
-
-        GUI.Label(new Rect(relojRect.x, relojRect.y + 3, relojW, 24), $"<color={colorHora}>⏰ {textoReloj}</color>", clockTitleStyle);
-        GUI.Label(new Rect(relojRect.x, relojRect.y + 27, relojW, 18), $"<color=#CCCCCC>Escapa antes de la 1:00 AM ({tiempoRestanteStr})</color>", clockSubStyle);
-
-        // Botón de mapa completo / cámara jugador debajo del reloj
-        string mapBtnText = (camFollow != null && camFollow.EstaViendoMapaCompleto()) ? "[M] Zoom Jugador" : "[M] Ver Museo Completo";
-        if (GUI.Button(new Rect((Screen.width - 160) / 2f, relojRect.yMax + 5, 160, 22), mapBtnText, buttonStyle))
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 900f, 520f);
+        try
         {
-            if (camFollow != null) camFollow.AlternarMapaCompleto();
-        }
+            // 1. HUD SUPERIOR: VIGILANTE (IZQUIERDA)
+            float barraW = 120f;
+            float barraH = 10f;
 
-        // 3. HUD SUPERIOR: MOMIA 1 (DERECHA)
-        GUI.Box(new Rect(Screen.width - 210, 10, 200, 60), "", boxStyle);
-        GUI.Label(new Rect(Screen.width - 200, 12, 180, 16), "MOMIA 1", headerStyle);
-        float pctMomia = momia != null ? Mathf.Clamp01(momia.vidaActual / momia.vidaMaxima) : 1f;
-        GUI.DrawTexture(new Rect(Screen.width - 200, 30, barraW, barraH), texFondoBarra);
-        GUI.DrawTexture(new Rect(Screen.width - 200, 30, barraW * pctMomia, barraH), texVidaMomia);
-        GUI.Label(new Rect(Screen.width - 74, 27, 60, 16), $"{(int)(pctMomia * 100)}%", textStyle);
+            GUI.Box(new Rect(10, 10, 210, 60), "", boxStyle);
+            GUI.Label(new Rect(18, 12, 190, 16), "VIGILANTE", headerStyle);
+            float pctVigilante = player != null ? Mathf.Clamp01(player.vidaActual / player.vidaMaxima) : 0f;
+            GUI.DrawTexture(new Rect(18, 30, barraW, barraH), texFondoBarra);
+            GUI.DrawTexture(new Rect(18, 30, barraW * pctVigilante, barraH), texVidaVigilante);
+            GUI.Label(new Rect(144, 27, 60, 16), $"{(int)(pctVigilante * 100)}%", textStyle);
 
-        string alerta = (momia != null && momia.estaSiendoObservada) ? "<color=#66FF66>● Quieta (La miras)</color>" : "<color=#FF4444>▲ Acechando (No la miras)</color>";
-        GUI.Label(new Rect(Screen.width - 200, 44, 180, 16), alerta, textStyle);
+            string objText = (player != null && player.tieneLlave) ? "<color=#FFD700>✓ Llave lista (Ve a Cripta)</color>" : "Busca la llave en Galería";
+            GUI.Label(new Rect(18, 44, 190, 16), "Obj: " + objText, textStyle);
 
-        // Mini guía de controles en la esquina inferior izquierda
-        GUI.Label(new Rect(10, Screen.height - 24, 480, 20), "<color=#AAAAAA>Flechas: Mover | Espacio: Saltar | Z: Tolete | X: Pistola | M: Ver Mapa</color>", textStyle);
+            // 2. RELOJ DEL MUSEO (CENTRO SUPERIOR: 12:00 AM A 1:00 AM)
+            float relojW = 230f;
+            float relojH = 50f;
+            Rect relojRect = new Rect((vw - relojW) / 2f, 10f, relojW, relojH);
+            GUI.Box(relojRect, "", boxStyle);
 
-        // 4. MODAL DE VICTORIA
-        if (nivelCompletado)
-        {
-            float w = 400f;
-            float h = 210f;
-            Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+            bool tiempoPoco = (duracionNivelSegundos - tiempoTranscurrido) < 45f;
+            string colorHora = tiempoPoco ? "#FF4444" : "#FFD700";
 
-            GUI.Box(center, "", boxStyle);
-            GUI.Label(new Rect(center.x + 15, center.y + 20, w - 30, 35), "¡FELICIDADES!", titleStyle);
-            GUI.Label(new Rect(center.x + 15, center.y + 60, w - 30, 25), "Nivel 1 Superado", headerStyle);
-            GUI.Label(new Rect(center.x + 15, center.y + 90, w - 30, 45), $"Has escapado del museo a tiempo ({textoReloj}) antes de la 1:00 AM.", textStyle);
+            GUI.Label(new Rect(relojRect.x, relojRect.y + 3, relojW, 24), $"<color={colorHora}>⏰ {textoReloj}</color>", clockTitleStyle);
+            GUI.Label(new Rect(relojRect.x, relojRect.y + 27, relojW, 18), $"<color=#CCCCCC>Escapa antes de la 1:00 AM ({tiempoRestanteStr})</color>", clockSubStyle);
 
-            if (GUI.Button(new Rect(center.x + (w - 160) / 2f, center.y + 145, 160, 38), "SIGUIENTE", buttonStyle))
+            // Botón de mapa completo / cámara jugador debajo del reloj
+            string mapBtnText = (camFollow != null && camFollow.EstaViendoMapaCompleto()) ? "[M] Zoom Jugador" : "[M] Ver Museo Completo";
+            if (GUI.Button(new Rect((vw - 160) / 2f, relojRect.yMax + 5, 160, 22), mapBtnText, buttonStyle))
             {
-                SiguienteNivel();
+                if (camFollow != null) camFollow.AlternarMapaCompleto();
             }
-        }
 
-        // 5. MODAL DE GAME OVER
-        if (juegoTerminado)
-        {
-            // Ventana emergente amplia y tenebrosa
-            float w = 480f;
-            float h = 422f;
-            Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+            // 3. HUD SUPERIOR: MOMIA 1 (DERECHA)
+            GUI.Box(new Rect(vw - 210, 10, 200, 60), "", boxStyle);
+            GUI.Label(new Rect(vw - 200, 12, 180, 16), "MOMIA 1", headerStyle);
+            float pctMomia = momia != null ? Mathf.Clamp01(momia.vidaActual / momia.vidaMaxima) : 1f;
+            GUI.DrawTexture(new Rect(vw - 200, 30, barraW, barraH), texFondoBarra);
+            GUI.DrawTexture(new Rect(vw - 200, 30, barraW * pctMomia, barraH), texVidaMomia);
+            GUI.Label(new Rect(vw - 74, 27, 60, 16), $"{(int)(pctMomia * 100)}%", textStyle);
 
-            // Sombra oscura exterior de fondo
-            GUI.color = new Color(0f, 0f, 0f, 0.82f);
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texPanel);
-            GUI.color = Color.white;
+            string alerta = (momia != null && momia.estaSiendoObservada) ? "<color=#66FF66>● Quieta (La miras)</color>" : "<color=#FF4444>▲ Acechando (No la miras)</color>";
+            GUI.Label(new Rect(vw - 200, 44, 180, 16), alerta, textStyle);
 
-            // Marco principal de Game Over
-            GUI.Box(center, "", gameOverPanelStyle ?? boxStyle);
+            // Mini guía de controles en la esquina inferior izquierda
+            GUI.Label(new Rect(10, vh - 24, Mathf.Min(480f, vw - 20f), 20), "<color=#AAAAAA>Flechas: Mover | Espacio: Saltar | Z: Tolete | X: Pistola | M: Ver Mapa</color>", textStyle);
 
-            // Borde superior sangriento
-            GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.9f);
-            GUI.DrawTexture(new Rect(center.x + 8, center.y + 6, w - 16, 2), texVidaMomia);
-            GUI.color = Color.white;
-
-            // Título: GAME OVER
-            GUI.Label(new Rect(center.x + 15, center.y + 12, w - 30, 32), "☠ GAME OVER ☠", gameOverTitleStyle ?? titleStyle);
-
-            // Razón de la muerte
-            GUI.Label(new Rect(center.x + 20, center.y + 46, w - 40, 44), motivoGameOver, gameOverReasonStyle ?? textStyle);
-
-            // Live Animated Screaming Mummy (debajo de la razón de Game Over)
-            if (texMomiaGritando != null && texMomiaGritando.Length > 0)
+            // 4. MODAL DE VICTORIA
+            if (nivelCompletado)
             {
-                int[] screamSeq = new int[] { 0, 1, 4, 5, 4, 1, 0, 2, 3, 5, 1 };
-                int frameIdx = screamSeq[(int)(Time.unscaledTime * 8f) % screamSeq.Length];
-                Texture2D currentFrameTex = texMomiaGritando[Mathf.Clamp(frameIdx, 0, texMomiaGritando.Length - 1)];
+                float w = Mathf.Min(420f, vw - 24f);
+                float h = Mathf.Min(220f, vh - 24f);
+                Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
 
-                if (currentFrameTex != null)
+                GUI.color = new Color(0f, 0f, 0f, 0.78f);
+                GUI.DrawTexture(new Rect(0, 0, vw, vh), texPanel);
+                GUI.color = Color.white;
+
+                GUI.Box(center, "", boxStyle);
+                GUI.Label(new Rect(center.x + 15, center.y + 20, w - 30, 35), "¡FELICIDADES!", titleStyle);
+                GUI.Label(new Rect(center.x + 15, center.y + 60, w - 30, 25), "Nivel 1 Superado", headerStyle);
+                GUI.Label(new Rect(center.x + 15, center.y + 90, w - 30, 45), $"Has escapado del museo a tiempo ({textoReloj}) antes de la 1:00 AM.", textStyle);
+
+                if (GUI.Button(new Rect(center.x + (w - 160) / 2f, center.y + h - 60, 160, 40), "SIGUIENTE", buttonStyle))
                 {
-                    // Temblores tenebrosos de alarido
-                    float shakeX = Mathf.Sin(Time.unscaledTime * 38f) * 2.5f;
-                    float shakeY = Mathf.Cos(Time.unscaledTime * 30f) * 1.5f;
-                    float pulse = 1f + 0.04f * Mathf.Sin(Time.unscaledTime * 9f);
-
-                    float mw = 175f * pulse;
-                    float mh = 205f * pulse;
-                    Rect mummyRect = new Rect(center.x + (w - mw) / 2f + shakeX, center.y + 96f + shakeY, mw, mh);
-
-                    // Aura roja maldita detrás de la momia gritando
-                    if (texAuraMomia != null)
-                    {
-                        float auraAlpha = 0.35f + 0.2f * Mathf.Sin(Time.unscaledTime * 6f);
-                        GUI.color = new Color(0.85f, 0.1f, 0.1f, auraAlpha);
-                        GUI.DrawTexture(new Rect(mummyRect.x - 18, mummyRect.y - 12, mw + 36, mh + 24), texAuraMomia);
-                        GUI.color = Color.white;
-                    }
-
-                    // Renderizado de la textura de la momia rugiendo
-                    GUI.DrawTexture(mummyRect, currentFrameTex, ScaleMode.ScaleToFit);
-
-                    // Leyenda atmosférica bajo la momia
-                    GUI.Label(new Rect(center.x + 15, center.y + 306, w - 30, 22),
-                        "<color=#FF5555><i>«¡El alma en pena de Guanajuato clama por tu carne! »</i></color>", textStyleCenter ?? textStyle);
+                    SiguienteNivel();
                 }
             }
 
-            // Borde inferior sangriento
-            GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.9f);
-            GUI.DrawTexture(new Rect(center.x + 8, center.y + 338, w - 16, 2), texVidaMomia);
-            GUI.color = Color.white;
-
-            // Botón de reintentar
-            if (GUI.Button(new Rect(center.x + (w - 220) / 2f, center.y + 352, 220, 42), "☠ REINTENTAR NIVEL 1 ☠", gameOverButtonStyle ?? buttonStyle))
+            // 5. MODAL DE GAME OVER
+            if (juegoTerminado)
             {
-                ReintentarNivel();
+                // Ventana emergente amplia y tenebrosa
+                float w = Mathf.Min(480f, vw - 24f);
+                float h = Mathf.Min(422f, vh - 24f);
+                Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
+
+                // Sombra oscura exterior de fondo
+                GUI.color = new Color(0f, 0f, 0f, 0.82f);
+                GUI.DrawTexture(new Rect(0, 0, vw, vh), texPanel);
+                GUI.color = Color.white;
+
+                // Marco principal de Game Over
+                GUI.Box(center, "", gameOverPanelStyle ?? boxStyle);
+
+                // Borde superior sangriento
+                GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.9f);
+                GUI.DrawTexture(new Rect(center.x + 8, center.y + 6, w - 16, 2), texVidaMomia);
+                GUI.color = Color.white;
+
+                // Título: GAME OVER
+                GUI.Label(new Rect(center.x + 15, center.y + 12, w - 30, 32), "☠ GAME OVER ☠", gameOverTitleStyle ?? titleStyle);
+
+                // Razón de la muerte
+                GUI.Label(new Rect(center.x + 20, center.y + 46, w - 40, 44), motivoGameOver, gameOverReasonStyle ?? textStyle);
+
+                // Live Animated Screaming Mummy (debajo de la razón de Game Over)
+                if (texMomiaGritando != null && texMomiaGritando.Length > 0)
+                {
+                    int[] screamSeq = new int[] { 0, 1, 4, 5, 4, 1, 0, 2, 3, 5, 1 };
+                    int frameIdx = screamSeq[(int)(Time.unscaledTime * 8f) % screamSeq.Length];
+                    Texture2D currentFrameTex = texMomiaGritando[Mathf.Clamp(frameIdx, 0, texMomiaGritando.Length - 1)];
+
+                    if (currentFrameTex != null)
+                    {
+                        // Temblores tenebrosos de alarido
+                        float shakeX = Mathf.Sin(Time.unscaledTime * 38f) * 2.5f;
+                        float shakeY = Mathf.Cos(Time.unscaledTime * 30f) * 1.5f;
+                        float pulse = 1f + 0.04f * Mathf.Sin(Time.unscaledTime * 9f);
+
+                        float mw = 175f * pulse;
+                        float mh = 205f * pulse;
+                        Rect mummyRect = new Rect(center.x + (w - mw) / 2f + shakeX, center.y + 96f + shakeY, mw, mh);
+
+                        // Aura roja maldita detrás de la momia gritando
+                        if (texAuraMomia != null)
+                        {
+                            float auraAlpha = 0.35f + 0.2f * Mathf.Sin(Time.unscaledTime * 6f);
+                            GUI.color = new Color(0.85f, 0.1f, 0.1f, auraAlpha);
+                            GUI.DrawTexture(new Rect(mummyRect.x - 18, mummyRect.y - 12, mw + 36, mh + 24), texAuraMomia);
+                            GUI.color = Color.white;
+                        }
+
+                        // Renderizado de la textura de la momia rugiendo
+                        GUI.DrawTexture(mummyRect, currentFrameTex, ScaleMode.ScaleToFit);
+
+                        // Leyenda atmosférica bajo la momia
+                        GUI.Label(new Rect(center.x + 15, center.y + 306, w - 30, 22),
+                            "<color=#FF5555><i>«¡El alma en pena de Guanajuato clama por tu carne! »</i></color>", textStyleCenter ?? textStyle);
+                    }
+                }
+
+                // Borde inferior sangriento
+                GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.9f);
+                GUI.DrawTexture(new Rect(center.x + 8, center.y + h - 84, w - 16, 2), texVidaMomia);
+                GUI.color = Color.white;
+
+                // Botón de reintentar
+                if (GUI.Button(new Rect(center.x + (w - 220) / 2f, center.y + h - 68, 220, 42), "☠ REINTENTAR NIVEL 1 ☠", gameOverButtonStyle ?? buttonStyle))
+                {
+                    ReintentarNivel();
+                }
             }
+        }
+        finally
+        {
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 

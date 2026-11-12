@@ -396,14 +396,25 @@ public class InteractableObject : MonoBehaviour, IInteractable
             Vector3 screenPos = cam.WorldToScreenPoint(transform.position + promptOffset);
             if (screenPos.z > 0)
             {
-                string txt = GetPromptText();
-                float w = Mathf.Clamp(txt.Length * 8.2f + 24f, 180f, 520f);
-                float h = 28f;
-                Rect rect = new Rect(screenPos.x - w / 2, Screen.height - screenPos.y - h / 2, w, h);
+                float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+                try
+                {
+                    Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                    string txt = GetPromptText();
+                    float w = Mathf.Clamp(txt.Length * 8.2f + 24f, 180f, vw - 20f);
+                    float h = 28f;
+                    float x = Mathf.Clamp(guiPos.x - w / 2f, 8f, vw - w - 8f);
+                    float y = Mathf.Clamp(guiPos.y - h / 2f, 8f, vh - h - 8f);
+                    Rect rect = new Rect(x, y, w, h);
 
-                GUI.color = new Color(1f, 0.92f, 0.45f, 0.98f);
-                GUI.Box(rect, txt);
-                GUI.color = Color.white;
+                    GUI.color = new Color(1f, 0.92f, 0.45f, 0.98f);
+                    GUI.Box(rect, txt);
+                    GUI.color = Color.white;
+                }
+                finally
+                {
+                    ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+                }
             }
         }
     }

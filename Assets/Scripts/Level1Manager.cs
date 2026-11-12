@@ -707,129 +707,137 @@ public class Level1Manager : MonoBehaviour
     {
         ResolverReferencias();
 
-        // Factor de escala responsivo basado en altura de pantalla (1.0 en 540p, 1.33 en 720p, 2.0 en 1080p Web)
-        float s = Mathf.Clamp(Screen.height / 540f, 1.0f, 2.2f);
-        InitStyles(s);
-
-        // Si el panel de lectura histórica está abierto, pausamos el dibujo del HUD para no tapar la nota
-        LoreUIController loreUI = LoreUIController.Instance != null ? LoreUIController.Instance : UnityEngine.Object.FindFirstObjectByType<LoreUIController>();
-        if (loreUI != null && loreUI.IsPanelOpen)
+        // Matriz responsiva uniforme para PC y celulares (pantalla alta densidad o compacta)
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 920f, 520f);
+        try
         {
-            return;
-        }
+            float s = 1f;
+            InitStyles(s);
 
-        // =========================================================================
-        // PANTALLAS DE FIN DE NIVEL: OCULTAR TODO EL HUD PARA QUE NADA LAS OBSTRUYA
-        // =========================================================================
-        if (nivelCompletado)
+            // Si el panel de lectura histórica está abierto, pausamos el dibujo del HUD para no tapar la nota
+            LoreUIController loreUI = LoreUIController.Instance != null ? LoreUIController.Instance : UnityEngine.Object.FindFirstObjectByType<LoreUIController>();
+            if (loreUI != null && loreUI.IsPanelOpen)
+            {
+                return;
+            }
+
+            // =========================================================================
+            // PANTALLAS DE FIN DE NIVEL: OCULTAR TODO EL HUD PARA QUE NADA LAS OBSTRUYA
+            // =========================================================================
+            if (nivelCompletado)
+            {
+                RenderModalVictoria(s, vw, vh);
+                return;
+            }
+
+            if (juegoTerminado)
+            {
+                RenderModalGameOver(s, vw, vh);
+                return;
+            }
+
+            // 1. HUD SUPERIOR: VIGILANTE (IZQUIERDA)
+            float boxW = 210f * s;
+            float boxH = 64f * s;
+            float barraW = 120f * s;
+            float barraH = 11f * s;
+            float pad = 10f * s;
+
+            GUI.Box(new Rect(pad, pad, boxW, boxH), "", boxStyle);
+            GUI.Label(new Rect(pad + 8 * s, pad + 2 * s, boxW - 16 * s, 18 * s), "VIGILANTE", headerStyle);
+            float pctVigilante = player != null ? Mathf.Clamp01(player.vidaActual / player.vidaMaxima) : 0f;
+            GUI.DrawTexture(new Rect(pad + 8 * s, pad + 20 * s, barraW, barraH), texFondoBarra);
+            GUI.DrawTexture(new Rect(pad + 8 * s, pad + 20 * s, barraW * pctVigilante, barraH), texVidaVigilante);
+            GUI.Label(new Rect(pad + 8 * s + barraW + 6 * s, pad + 17 * s, 50 * s, 18 * s), $"{(int)(pctVigilante * 100)}%", textStyle);
+
+            bool tieneLlaveActual = (player != null && player.tieneLlave) || (currentState == LevelState.KeyAcquired);
+            PistolController pistolRef = player != null ? player.GetComponent<PistolController>() : null;
+            bool tienePistolaActual = (pistolRef != null && pistolRef.HasPistol);
+
+            string objText;
+            if (tieneLlaveActual)
+                objText = "<color=#FFD700>✓ Llave lista (Ve a Cripta)</color>";
+            else if (tienePistolaActual)
+                objText = "<color=#66FF66>✓ Pistola lista. Busca la llave</color>";
+            else
+                objText = "Busca tu pistola en la Oficina Noroeste";
+
+            GUI.Label(new Rect(pad + 8 * s, pad + 35 * s, boxW - 16 * s, 24 * s), "Obj: " + objText, textStyle);
+
+            // 2. RELOJ DEL MUSEO (CENTRO SUPERIOR)
+            float relojW = 270f * s;
+            float relojH = 54f * s;
+            Rect relojRect = new Rect((vw - relojW) / 2f, pad, relojW, relojH);
+            GUI.Box(relojRect, "", boxStyle);
+
+            bool tiempoPoco = (duracionNivelSegundos - tiempoTranscurrido) < 45f;
+            string colorHora = tiempoPoco ? "#FF4444" : "#FFD700";
+
+            GUI.Label(new Rect(relojRect.x, relojRect.y + 4 * s, relojW, 26 * s), $"<color={colorHora}>⏰ {textoReloj}</color>", clockTitleStyle);
+            GUI.Label(new Rect(relojRect.x, relojRect.y + 30 * s, relojW, 20 * s), $"<color=#CCCCCC>Escapa antes de la 1:00 AM ({tiempoRestanteStr})</color>", clockSubStyle);
+
+            // Botón de mapa
+            string mapBtnText = (camFollow != null && camFollow.EstaViendoMapaCompleto()) ? "[M] Zoom Jugador" : "[M] Ver Museo Completo";
+            float mapBtnW = 170f * s;
+            float mapBtnH = 24f * s;
+            if (GUI.Button(new Rect((vw - mapBtnW) / 2f, relojRect.yMax + 4 * s, mapBtnW, mapBtnH), mapBtnText, buttonStyle))
+            {
+                if (camFollow != null) camFollow.AlternarMapaCompleto();
+            }
+
+            // 3. HUD SUPERIOR: MOMIA 1 (DERECHA)
+            float momiaX = vw - boxW - pad;
+            GUI.Box(new Rect(momiaX, pad, boxW, boxH), "", boxStyle);
+            GUI.Label(new Rect(momiaX + 8 * s, pad + 2 * s, boxW - 16 * s, 18 * s), "MOMIA 1", headerStyle);
+            float pctMomia = momia != null ? Mathf.Clamp01(momia.vidaActual / momia.vidaMaxima) : 1f;
+            GUI.DrawTexture(new Rect(momiaX + 8 * s, pad + 20 * s, barraW, barraH), texFondoBarra);
+            GUI.DrawTexture(new Rect(momiaX + 8 * s, pad + 20 * s, barraW * pctMomia, barraH), texVidaMomia);
+            GUI.Label(new Rect(momiaX + 8 * s + barraW + 6 * s, pad + 17 * s, 50 * s, 18 * s), $"{(int)(pctMomia * 100)}%", textStyle);
+
+            string alerta = (momia != null && momia.estaSiendoObservada) ? "<color=#66FF66>● Quieta (La miras)</color>" : "<color=#FF4444>▲ Acechando (No la miras)</color>";
+            GUI.Label(new Rect(momiaX + 8 * s, pad + 35 * s, boxW - 16 * s, 24 * s), alerta, textStyle);
+
+            // 4. BANNER TEMPORAL
+            if (bannerTimer > 0f && !string.IsNullOrEmpty(bannerMessage))
+            {
+                float bw = Mathf.Min(560f * s, vw - 40f);
+                float bh = 60f * s;
+                Rect bRect = new Rect((vw - bw) / 2f, relojRect.yMax + 32 * s, bw, bh);
+
+                GUI.color = new Color(0.05f, 0.05f, 0.08f, 0.92f);
+                GUI.Box(bRect, "");
+                GUI.color = Color.white;
+
+                GUIStyle bStyle = new GUIStyle(GUI.skin.label);
+                bStyle.fontSize = Mathf.RoundToInt(12 * s);
+                bStyle.fontStyle = FontStyle.Bold;
+                bStyle.alignment = TextAnchor.MiddleCenter;
+                bStyle.richText = true;
+                bStyle.normal.textColor = new Color(1f, 0.9f, 0.4f);
+
+                GUI.Label(bRect, bannerMessage, bStyle);
+            }
+
+            // 5. GUÍA DE CONTROLES INFERIOR
+            float ctrlW = Mathf.Min(560f * s, vw - 20f);
+            float ctrlH = 24 * s;
+            GUI.Label(new Rect(10 * s, vh - ctrlH - 4 * s, ctrlW, ctrlH), "<color=#AAAAAA>Flechas: Mover | Espacio: Saltar | Z: Tolete | X: Pistola | L: Luces | M: Ver Mapa</color>", textStyle);
+        }
+        finally
         {
-            RenderModalVictoria(s);
-            return;
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
-
-        if (juegoTerminado)
-        {
-            RenderModalGameOver(s);
-            return;
-        }
-
-        // 1. HUD SUPERIOR: VIGILANTE (IZQUIERDA)
-        float boxW = 210f * s;
-        float boxH = 64f * s;
-        float barraW = 120f * s;
-        float barraH = 11f * s;
-        float pad = 10f * s;
-
-        GUI.Box(new Rect(pad, pad, boxW, boxH), "", boxStyle);
-        GUI.Label(new Rect(pad + 8 * s, pad + 2 * s, boxW - 16 * s, 18 * s), "VIGILANTE", headerStyle);
-        float pctVigilante = player != null ? Mathf.Clamp01(player.vidaActual / player.vidaMaxima) : 0f;
-        GUI.DrawTexture(new Rect(pad + 8 * s, pad + 20 * s, barraW, barraH), texFondoBarra);
-        GUI.DrawTexture(new Rect(pad + 8 * s, pad + 20 * s, barraW * pctVigilante, barraH), texVidaVigilante);
-        GUI.Label(new Rect(pad + 8 * s + barraW + 6 * s, pad + 17 * s, 50 * s, 18 * s), $"{(int)(pctVigilante * 100)}%", textStyle);
-
-        bool tieneLlaveActual = (player != null && player.tieneLlave) || (currentState == LevelState.KeyAcquired);
-        PistolController pistolRef = player != null ? player.GetComponent<PistolController>() : null;
-        bool tienePistolaActual = (pistolRef != null && pistolRef.HasPistol);
-
-        string objText;
-        if (tieneLlaveActual)
-            objText = "<color=#FFD700>✓ Llave lista (Ve a Cripta)</color>";
-        else if (tienePistolaActual)
-            objText = "<color=#66FF66>✓ Pistola lista. Busca la llave</color>";
-        else
-            objText = "Busca tu pistola en la Oficina Noroeste";
-
-        GUI.Label(new Rect(pad + 8 * s, pad + 35 * s, boxW - 16 * s, 24 * s), "Obj: " + objText, textStyle);
-
-        // 2. RELOJ DEL MUSEO (CENTRO SUPERIOR)
-        float relojW = 270f * s;
-        float relojH = 54f * s;
-        Rect relojRect = new Rect((Screen.width - relojW) / 2f, pad, relojW, relojH);
-        GUI.Box(relojRect, "", boxStyle);
-
-        bool tiempoPoco = (duracionNivelSegundos - tiempoTranscurrido) < 45f;
-        string colorHora = tiempoPoco ? "#FF4444" : "#FFD700";
-
-        GUI.Label(new Rect(relojRect.x, relojRect.y + 4 * s, relojW, 26 * s), $"<color={colorHora}>⏰ {textoReloj}</color>", clockTitleStyle);
-        GUI.Label(new Rect(relojRect.x, relojRect.y + 30 * s, relojW, 20 * s), $"<color=#CCCCCC>Escapa antes de la 1:00 AM ({tiempoRestanteStr})</color>", clockSubStyle);
-
-        // Botón de mapa
-        string mapBtnText = (camFollow != null && camFollow.EstaViendoMapaCompleto()) ? "[M] Zoom Jugador" : "[M] Ver Museo Completo";
-        float mapBtnW = 170f * s;
-        float mapBtnH = 24f * s;
-        if (GUI.Button(new Rect((Screen.width - mapBtnW) / 2f, relojRect.yMax + 4 * s, mapBtnW, mapBtnH), mapBtnText, buttonStyle))
-        {
-            if (camFollow != null) camFollow.AlternarMapaCompleto();
-        }
-
-        // 3. HUD SUPERIOR: MOMIA 1 (DERECHA)
-        float momiaX = Screen.width - boxW - pad;
-        GUI.Box(new Rect(momiaX, pad, boxW, boxH), "", boxStyle);
-        GUI.Label(new Rect(momiaX + 8 * s, pad + 2 * s, boxW - 16 * s, 18 * s), "MOMIA 1", headerStyle);
-        float pctMomia = momia != null ? Mathf.Clamp01(momia.vidaActual / momia.vidaMaxima) : 1f;
-        GUI.DrawTexture(new Rect(momiaX + 8 * s, pad + 20 * s, barraW, barraH), texFondoBarra);
-        GUI.DrawTexture(new Rect(momiaX + 8 * s, pad + 20 * s, barraW * pctMomia, barraH), texVidaMomia);
-        GUI.Label(new Rect(momiaX + 8 * s + barraW + 6 * s, pad + 17 * s, 50 * s, 18 * s), $"{(int)(pctMomia * 100)}%", textStyle);
-
-        string alerta = (momia != null && momia.estaSiendoObservada) ? "<color=#66FF66>● Quieta (La miras)</color>" : "<color=#FF4444>▲ Acechando (No la miras)</color>";
-        GUI.Label(new Rect(momiaX + 8 * s, pad + 35 * s, boxW - 16 * s, 24 * s), alerta, textStyle);
-
-        // 4. BANNER TEMPORAL
-        if (bannerTimer > 0f && !string.IsNullOrEmpty(bannerMessage))
-        {
-            float bw = Mathf.Min(560f * s, Screen.width - 40f);
-            float bh = 60f * s;
-            Rect bRect = new Rect((Screen.width - bw) / 2f, relojRect.yMax + 32 * s, bw, bh);
-
-            GUI.color = new Color(0.05f, 0.05f, 0.08f, 0.92f);
-            GUI.Box(bRect, "");
-            GUI.color = Color.white;
-
-            GUIStyle bStyle = new GUIStyle(GUI.skin.label);
-            bStyle.fontSize = Mathf.RoundToInt(12 * s);
-            bStyle.fontStyle = FontStyle.Bold;
-            bStyle.alignment = TextAnchor.MiddleCenter;
-            bStyle.richText = true;
-            bStyle.normal.textColor = new Color(1f, 0.9f, 0.4f);
-
-            GUI.Label(bRect, bannerMessage, bStyle);
-        }
-
-        // 5. GUÍA DE CONTROLES INFERIOR
-        float ctrlW = 560f * s;
-        float ctrlH = 24 * s;
-        GUI.Label(new Rect(10 * s, Screen.height - ctrlH - 4 * s, ctrlW, ctrlH), "<color=#AAAAAA>Flechas: Mover | Espacio: Saltar | Z: Tolete | X: Pistola | L: Luces | M: Ver Mapa</color>", textStyle);
     }
 
-    private void RenderModalVictoria(float s)
+    private void RenderModalVictoria(float s, float vw, float vh)
     {
-        float w = Mathf.Min(520f * s, Screen.width - 30f);
-        float h = Mathf.Min(440f * s, Screen.height - 30f);
-        Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+        float w = Mathf.Min(540f * s, vw - 24f);
+        float h = Mathf.Min(440f * s, vh - 24f);
+        Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
 
         // Sombra de fondo oscura en toda la pantalla
         GUI.color = new Color(0f, 0f, 0f, 0.92f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texPanel);
+        GUI.DrawTexture(new Rect(0, 0, vw, vh), texPanel);
         GUI.color = Color.white;
 
         // Marco del modal
@@ -903,14 +911,14 @@ public class Level1Manager : MonoBehaviour
         }
     }
 
-    private void RenderModalGameOver(float s)
+    private void RenderModalGameOver(float s, float vw, float vh)
     {
-        float w = Mathf.Min(520f * s, Screen.width - 30f);
-        float h = Mathf.Min(440f * s, Screen.height - 30f);
-        Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+        float w = Mathf.Min(540f * s, vw - 24f);
+        float h = Mathf.Min(440f * s, vh - 24f);
+        Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
 
         GUI.color = new Color(0f, 0f, 0f, 0.90f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), texPanel);
+        GUI.DrawTexture(new Rect(0, 0, vw, vh), texPanel);
         GUI.color = Color.white;
 
         GUI.Box(center, "", gameOverPanelStyle ?? boxStyle);

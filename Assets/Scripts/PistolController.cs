@@ -344,22 +344,30 @@ public class PistolController : MonoBehaviour
         if (!hasPistol) return;
         if (Level1Manager.Instance != null && (Level1Manager.Instance.IsNivelCompletado || Level1Manager.Instance.IsJuegoTerminado)) return;
 
-        // Indicador de Munición en la parte superior izquierda (bajo el HUD de la Vigilante)
-        float panelW = 210f;
-        float panelH = 32f;
-        Rect rect = new Rect(10, 75, panelW, panelH);
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 920f, 520f);
+        try
+        {
+            // Indicador de Munición en la parte superior izquierda (bajo el HUD de la Vigilante)
+            float panelW = 210f;
+            float panelH = 32f;
+            Rect rect = new Rect(10f, 78f, panelW, panelH);
 
-        GUI.color = new Color(0.1f, 0.12f, 0.15f, 0.88f);
-        GUI.Box(rect, "");
-        GUI.color = Color.white;
+            GUI.color = new Color(0.1f, 0.12f, 0.15f, 0.88f);
+            GUI.Box(rect, "");
+            GUI.color = Color.white;
 
-        GUIStyle style = new GUIStyle(GUI.skin.label);
-        style.fontSize = 11;
-        style.fontStyle = FontStyle.Bold;
-        style.alignment = TextAnchor.MiddleCenter;
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.fontSize = 11;
+            style.fontStyle = FontStyle.Bold;
+            style.alignment = TextAnchor.MiddleCenter;
 
-        string ammoColor = currentAmmo > 2 ? "#FFD700" : (currentAmmo > 0 ? "#FFA500" : "#FF4444");
-        GUI.Label(rect, $"<color={ammoColor}>PISTOLA: {currentAmmo} BALAS</color>\n<size=9><color=#CCCCCC>[Clic Izquierdo: Disparar | Apuntar con Ratón]</color></size>", style);
+            string ammoColor = currentAmmo > 2 ? "#FFD700" : (currentAmmo > 0 ? "#FFA500" : "#FF4444");
+            GUI.Label(rect, $"<color={ammoColor}>PISTOLA: {currentAmmo} BALAS</color>\n<size=9><color=#CCCCCC>[Clic Izquierdo: Disparar | Apuntar con Ratón]</color></size>", style);
+        }
+        finally
+        {
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+        }
     }
 
     private AudioClip GenerarSonidoDisparoProcedural()
