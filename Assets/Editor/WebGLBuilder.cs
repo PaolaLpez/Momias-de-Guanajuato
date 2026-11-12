@@ -28,7 +28,7 @@ public static class WebGLBuilder
         PlayerSettings.defaultWebScreenHeight = 600;
         PlayerSettings.runInBackground = true;
 
-        // 2. Escenas incluidas: Menú Principal, Nivel 1, Nivel 2 y Nivel 3 (si existe)
+        // 2. Escenas incluidas: Menú Principal, Nivel 1, Nivel 2, Nivel 3 y Nivel 4 (si existen)
         List<string> sceneList = new List<string>
         {
             "Assets/Scenes/MenuPrincipal.unity",
@@ -39,6 +39,11 @@ public static class WebGLBuilder
         if (File.Exists("Assets/Scenes/Nivel 3.unity"))
         {
             sceneList.Add("Assets/Scenes/Nivel 3.unity");
+        }
+
+        if (File.Exists("Assets/Scenes/Nivel 4.unity"))
+        {
+            sceneList.Add("Assets/Scenes/Nivel 4.unity");
         }
 
         string[] scenes = sceneList.ToArray();
