@@ -672,32 +672,16 @@ public class MomiaNivel2Controller : MonoBehaviour
         ultimaPosicionSonido = posicionRuido;
         ultimoSonidoEscuchado = string.IsNullOrEmpty(etiqueta) ? "Ruido detectado" : etiqueta;
 
-        // Si el sonido proviene de entrar/salir de un escondite, detectarlo y fijarlo como objetivo
+        // Si el sonido proviene de entrar/salir de un escondite, la momia escucha el ruido e irá a investigar la zona,
+        // pero NUNCA podrá ver dentro del escondite ni sacar a la vigilante mientras permanezca oculta.
         bool esRuidoEscondite = etiqueta != null && (etiqueta.Contains("ESCONDITE") || etiqueta.Contains("TAQUILLA") || etiqueta.Contains("CRIPTA") || etiqueta.Contains("LOSA") || etiqueta.Contains("APERTURA"));
         if (esRuidoEscondite)
         {
-            EsconditeNivel2 escCercano = null;
-            float menorDist = 4.5f;
-            EsconditeNivel2[] todosEscondites = FindObjectsByType<EsconditeNivel2>(FindObjectsSortMode.None);
-            for (int i = 0; i < todosEscondites.Length; i++)
-            {
-                if (todosEscondites[i] == null) continue;
-                float d = Vector2.Distance(todosEscondites[i].transform.position, posicionRuido);
-                if (d < menorDist)
-                {
-                    menorDist = d;
-                    escCercano = todosEscondites[i];
-                }
-            }
-
-            if (escCercano != null && escCercano.EstaOcupado)
-            {
-                esconditeComprometido = escCercano;
-                jugadorDetectadoAlEsconderse = true;
-                ultimaPosicionSonido = escCercano.transform.position;
-                ultimoSonidoEscuchado = "¡LA MOMIA ESCUCHÓ TU ESCONDITE!";
-            }
+            ultimaPosicionSonido = posicionRuido;
+            ultimoSonidoEscuchado = "¡La momia escuchó un ruido y busca por la zona!";
         }
+        esconditeComprometido = null;
+        jugadorDetectadoAlEsconderse = false;
 
         timerInvestigacionRestante = esSonidoFuerteOMic ? 14.5f : 10.5f;
         timerBusquedaLocal = 0f;
@@ -1027,34 +1011,24 @@ public class MomiaNivel2Controller : MonoBehaviour
 
         EsconditeNivel2 esconditeActual = ObtenerEsconditeOcupado();
 
-        if (esconditeActual != null)
+        if (esconditeActual != null || DetectorMicrofonoNivel2.VerificarSiJugadorEstaEscondido())
         {
+            // Mientras la vigilante está dentro de un escondite, está 100% protegida e invisible:
+            // Si la momia la había escuchado antes, solo merodea buscando alrededor sin poder verla ni sacarla.
             EstaEjecutandoAtaqueRasguno = false;
             TiempoRasgunandoActual = 0f;
+            esconditeComprometido = null;
+            jugadorDetectadoAlEsconderse = false;
 
-            if (esconditeComprometido == null &&
-                (estadoActual == EstadoMomia2.AlertaAcusticaGrito ||
-                 estadoActual == EstadoMomia2.InvestigandoSonido ||
-                 estadoActual == EstadoMomia2.CazandoContactoLetal) &&
-                distanciaAlJugador <= 6.2f &&
-                timerInvestigacionRestante > 6.5f &&
-                !HayMuroORejaCerradaEntrePuntos(transform.position, esconditeActual.transform.position, 0.22f))
+            if (estadoActual == EstadoMomia2.CazandoContactoLetal)
             {
-                esconditeComprometido = esconditeActual;
-                jugadorDetectadoAlEsconderse = true;
-                ultimaPosicionSonido = esconditeActual.transform.position;
-                ultimoSonidoEscuchado = "¡TE ESCUCHÓ ENTRAR AL ESCONDITE!";
-            }
-
-            if (esconditeComprometido != null &&
-                Vector2.Distance(transform.position, esconditeComprometido.transform.position) <= 2.2f &&
-                !HayMuroORejaCerradaEntrePuntos(transform.position, esconditeComprometido.transform.position, 0.20f))
-            {
-                esconditeComprometido.SalirEscondite();
-                esconditeComprometido = null;
-                jugadorDetectadoAlEsconderse = false;
-                estadoActual = EstadoMomia2.CazandoContactoLetal;
-                ultimoSonidoEscuchado = "¡LA MOMIA TE SACÓ DEL ESCONDITE!";
+                estadoActual = EstadoMomia2.InvestigandoSonido;
+                timerInvestigacionRestante = Mathf.Max(timerInvestigacionRestante, 6.5f);
+                if (esconditeActual != null)
+                {
+                    ultimaPosicionSonido = esconditeActual.transform.position;
+                }
+                ultimoSonidoEscuchado = "La momia busca alrededor pero no puede verte en el escondite";
             }
             return;
         }
@@ -1474,12 +1448,15 @@ public class MomiaNivel2Controller : MonoBehaviour
 
             case EstadoMomia2.CazandoContactoLetal:
                 bool jugadorOculto = DetectorMicrofonoNivel2.VerificarSiJugadorEstaEscondido();
-                if (jugadorOculto && esconditeComprometido == null)
+                if (jugadorOculto)
                 {
                     EstaEjecutandoAtaqueRasguno = false;
                     TiempoRasgunandoActual = 0f;
+                    esconditeComprometido = null;
+                    jugadorDetectadoAlEsconderse = false;
                     estadoActual = EstadoMomia2.InvestigandoSonido;
-                    timerInvestigacionRestante = 6.0f;
+                    timerInvestigacionRestante = Mathf.Max(timerInvestigacionRestante, 6.5f);
+                    ultimoSonidoEscuchado = "La momia busca alrededor pero no puede verte en el escondite";
                     break;
                 }
 

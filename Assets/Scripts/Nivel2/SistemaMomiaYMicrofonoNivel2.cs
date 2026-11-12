@@ -23,6 +23,15 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
     public static SistemaMomiaYMicrofonoNivel2 Instance { get; private set; }
     public static bool ModoSigiloActivo { get; private set; }
 
+    public static void ResetearModoSigiloGlobal()
+    {
+        ModoSigiloActivo = false;
+        if (Instance != null)
+        {
+            Instance.sigiloAlternadoC = false;
+        }
+    }
+
     private PlayerController playerScript;
     private Transform playerTransform;
     private Rigidbody2D playerRb;
@@ -152,6 +161,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
     private static void AlCargarEscena(Scene escena, LoadSceneMode modo)
     {
+        ResetearModoSigiloGlobal();
         if (escena.name == NombreEscenaNivel2)
         {
             Time.timeScale = 1f;
@@ -288,6 +298,10 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
     private void OnDisable()
     {
+        if (Application.isPlaying)
+        {
+            ResetearModoSigiloGlobal();
+        }
         TrampaAcusticaNivel2.OnRuidoGenerado -= AlGenerarseRuidoEnMundo;
         InterruptorFusibleNivel2.OnFaseElectricaRestaurada -= AlRestaurarFaseIndividual;
         GeneradorPrincipalNivel2.OnElectricidadTotalmenteRestaurada -= AlRestaurarElectricidad;
@@ -295,6 +309,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
     private void OnDestroy()
     {
+        ResetearModoSigiloGlobal();
         if (Instance == this) Instance = null;
         if (texBlanca != null)
         {
@@ -305,6 +320,10 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
 
     private void Start()
     {
+        if (Application.isPlaying)
+        {
+            ResetearModoSigiloGlobal();
+        }
         EmbellecerEscenarioSubterraneoNivel2();
         ConfigurarJugadorYMicrofono();
         ConfigurarMomia2();
@@ -2581,55 +2600,66 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
     {
         AsegurarEstilosGUI();
 
-        if (jumpscareActivado)
+        float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 860f, 480f);
+        try
         {
-            DibujarSecuenciaJumpscareYGameOverUnico();
-            return;
-        }
-
-        if (victoriaActivada)
-        {
-            DibujarModalVictoriaUnico();
-            return;
-        }
-
-        // Si el plano del subsuelo está abierto en pantalla, ocultar completamente el HUD para no encimarlo
-        if (PlanoSubterraneoNivel2.VisorPlanoAbierto)
-        {
-            return;
-        }
-
-        DibujarVinetaTerrorPantalla();
-
-        // === LOS 3 CUADRANTES EXCLUSIVAMENTE EN LA PARTE SUPERIOR ===
-        DibujarTresCuadrantesSuperiores();
-
-        // Aviso flotante para volver a cerrar una reja abierta y encerrar a la Momia (Opción 2)
-        if (rejaAbiertaCercanaParaCerrar != null && rejaAbiertaCercanaParaCerrar.estaAbierta)
-        {
-            Camera cam = Camera.main;
-            if (cam != null)
+            if (jumpscareActivado)
             {
-                Vector3 screenPos = cam.WorldToScreenPoint(rejaAbiertaCercanaParaCerrar.transform.position + new Vector3(0f, 1.2f, 0f));
-                if (screenPos.z > 0f)
+                DibujarSecuenciaJumpscareYGameOverUnico(vw, vh);
+                return;
+            }
+
+            if (victoriaActivada)
+            {
+                DibujarModalVictoriaUnico(vw, vh);
+                return;
+            }
+
+            // Si el plano del subsuelo está abierto en pantalla, ocultar completamente el HUD para no encimarlo
+            if (PlanoSubterraneoNivel2.VisorPlanoAbierto)
+            {
+                return;
+            }
+
+            DibujarVinetaTerrorPantalla(vw, vh);
+
+            // === LOS 3 CUADRANTES EXCLUSIVAMENTE EN LA PARTE SUPERIOR ===
+            DibujarTresCuadrantesSuperiores(vw, vh);
+
+            // Aviso flotante para volver a cerrar una reja abierta y encerrar a la Momia (Opción 2)
+            if (rejaAbiertaCercanaParaCerrar != null && rejaAbiertaCercanaParaCerrar.estaAbierta)
+            {
+                Camera cam = Camera.main;
+                if (cam != null)
                 {
-                    float w = 265f;
-                    float h = 26f;
-                    Rect rectPrompt = new Rect(screenPos.x - w * 0.5f, Screen.height - screenPos.y - h * 0.5f, w, h);
-                    DibujarCajaConBorde(rectPrompt, new Color(0.08f, 0.08f, 0.12f, 0.92f), new Color(0.95f, 0.65f, 0.20f, 0.85f));
-                    GUI.Label(rectPrompt, "<color=#FFAA33><b>[E] Bajar Reja Oxidada (Encerrar)</b></color>", estiloRelojSub);
+                    Vector3 screenPos = cam.WorldToScreenPoint(rejaAbiertaCercanaParaCerrar.transform.position + new Vector3(0f, 1.2f, 0f));
+                    if (screenPos.z > 0f)
+                    {
+                        Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                        float w = 265f;
+                        float h = 26f;
+                        float px = Mathf.Clamp(guiPos.x - w * 0.5f, 8f, vw - w - 8f);
+                        float py = Mathf.Clamp(guiPos.y - h * 0.5f, 8f, vh - h - 8f);
+                        Rect rectPrompt = new Rect(px, py, w, h);
+                        DibujarCajaConBorde(rectPrompt, new Color(0.08f, 0.08f, 0.12f, 0.92f), new Color(0.95f, 0.65f, 0.20f, 0.85f));
+                        GUI.Label(rectPrompt, "<color=#FFAA33><b>[E] Bajar Reja Oxidada (Encerrar)</b></color>", estiloRelojSub);
+                    }
                 }
             }
+
+            // Pie de controles discreto abajo
+            GUI.Label(new Rect(12f, vh - 22f, Mathf.Min(920f, vw - 24f), 18f),
+                "<color=#888888>WASD/Flechas: Mover | Ctrl/C: Modo Sigilo | Shift: Correr (¡Hace ruido!) | Espacio: Saltar | E: Interactuar | M/P: Plano | ESC: Configuración</color>",
+                estiloTextoCuadrante);
+
+            if (menuConfiguracionAbierto)
+            {
+                DibujarModalConfiguracionJuego(vw, vh);
+            }
         }
-
-        // Pie de controles discreto abajo
-        GUI.Label(new Rect(12f, Screen.height - 22f, 920f, 18f),
-            "<color=#888888>WASD/Flechas: Mover | Ctrl/C: Modo Sigilo | Shift: Correr (¡Hace ruido!) | Espacio: Saltar | E: Interactuar | M/P: Plano | ESC: Configuración</color>",
-            estiloTextoCuadrante);
-
-        if (menuConfiguracionAbierto)
+        finally
         {
-            DibujarModalConfiguracionJuego();
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 
@@ -2639,17 +2669,17 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
     /// 2. Centro: Reloj en tiempo real (01:00 AM -> 02:00 AM + Cuenta regresiva).
     /// 3. Derecha: Únicamente la Barra del Micrófono (sin botones ni sliders) y el estado de la Momia.
     /// </summary>
-    private void DibujarTresCuadrantesSuperiores()
+    private void DibujarTresCuadrantesSuperiores(float vw, float vh)
     {
         float margen = 10f;
         float topY = 10f;
         float altoCuadrante = 92f;
 
         // Calcular anchos responsivos para que nunca se encimen entre sí
-        float anchoDisponible = Screen.width - (margen * 4f);
-        float anchoIzq = Mathf.Clamp(anchoDisponible * 0.34f, 260f, 350f);
-        float anchoDer = Mathf.Clamp(anchoDisponible * 0.34f, 260f, 350f);
-        float anchoCentro = Mathf.Clamp(anchoDisponible * 0.26f, 210f, 280f);
+        float anchoDisponible = vw - (margen * 4f);
+        float anchoIzq = Mathf.Clamp(anchoDisponible * 0.34f, 250f, 350f);
+        float anchoDer = Mathf.Clamp(anchoDisponible * 0.34f, 250f, 350f);
+        float anchoCentro = Mathf.Clamp(anchoDisponible * 0.26f, 200f, 280f);
 
         // -------------------------------------------------------------------------
         // CUADRANTE 1 (IZQUIERDA SUPERIOR): SALUD DEL VIGILANTE, MODO Y FASES DE ENERGÍA
@@ -2714,7 +2744,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         // -------------------------------------------------------------------------
         // CUADRANTE 2 (CENTRO SUPERIOR): RELOJ Y CUENTA DE TIEMPO EN VIVO
         // -------------------------------------------------------------------------
-        float centroX = (Screen.width - anchoCentro) * 0.5f;
+        float centroX = (vw - anchoCentro) * 0.5f;
         Rect rectCentro = new Rect(centroX, topY, anchoCentro, altoCuadrante);
         bool pocoTiempo = (DuracionNivelSegundos - tiempoTranscurridoNivel) < 40f;
         Color bordeReloj = pocoTiempo ? new Color(0.95f, 0.22f, 0.18f, 0.90f) : new Color(0.55f, 0.48f, 0.25f, 0.80f);
@@ -2746,7 +2776,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         // -------------------------------------------------------------------------
         // CUADRANTE 3 (DERECHA SUPERIOR): SOLO BARRA DE MICRÓFONO Y ESTADO DE MOMIA
         // -------------------------------------------------------------------------
-        Rect rectDer = new Rect(Screen.width - anchoDer - margen, topY, anchoDer, altoCuadrante);
+        Rect rectDer = new Rect(vw - anchoDer - margen, topY, anchoDer, altoCuadrante);
         bool alertaMic = detectorMic != null && detectorMic.SuperandoUmbral;
         bool momiaEnAlerta = momia2 != null && momia2.estadoActual != MomiaNivel2Controller.EstadoMomia2.AcechandoEnOscuridad;
 
@@ -2823,14 +2853,14 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
     /// Menú de Configuración del Juego (accesible solo con ESC).
     /// ÚNICO lugar donde se puede ajustar la sensibilidad del micrófono o el volumen general.
     /// </summary>
-    private void DibujarModalConfiguracionJuego()
+    private void DibujarModalConfiguracionJuego(float vw, float vh)
     {
-        DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.78f));
+        DibujarRectanguloColor(new Rect(0f, 0f, vw, vh), new Color(0f, 0f, 0f, 0.78f));
 
-        float w = 460f;
-        float h = 290f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = (Screen.height - h) * 0.5f;
+        float w = Mathf.Min(480f, vw - 24f);
+        float h = Mathf.Min(295f, vh - 24f);
+        float x = (vw - w) * 0.5f;
+        float y = (vh - h) * 0.5f;
 
         DibujarCajaConBorde(new Rect(x, y, w, h),
             new Color(0.06f, 0.07f, 0.10f, 0.98f),
@@ -2843,7 +2873,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         float volActual = AudioListener.volume;
         GUI.Label(new Rect(x + 28f, y + 58f, 220f, 20f),
             "Volumen del Juego: " + Mathf.RoundToInt(volActual * 100f) + "%", estiloTextoCuadrante);
-        float nuevoVol = GUI.HorizontalSlider(new Rect(x + 215f, y + 63f, 215f, 18f), volActual, 0f, 1f);
+        float nuevoVol = GUI.HorizontalSlider(new Rect(x + 215f, y + 63f, w - 245f, 18f), volActual, 0f, 1f);
         if (Mathf.Abs(nuevoVol - volActual) > 0.001f)
         {
             AudioListener.volume = nuevoVol;
@@ -2857,7 +2887,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             int pctSens = Mathf.RoundToInt(detectorMic.sensibilidad * 100f);
             GUI.Label(new Rect(x + 28f, y + 98f, 220f, 20f),
                 "Sensibilidad del Micrófono: " + pctSens + "%", estiloTextoCuadrante);
-            float nuevaSens = GUI.HorizontalSlider(new Rect(x + 215f, y + 103f, 215f, 18f), detectorMic.sensibilidad, 0.15f, 0.95f);
+            float nuevaSens = GUI.HorizontalSlider(new Rect(x + 215f, y + 103f, w - 245f, 18f), detectorMic.sensibilidad, 0.15f, 0.95f);
             if (Mathf.Abs(nuevaSens - detectorMic.sensibilidad) > 0.001f)
             {
                 detectorMic.CambiarSensibilidadDesdeConfiguracion(nuevaSens);
@@ -2872,25 +2902,26 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             }
         }
 
-        if (GUI.Button(new Rect(x + 28f, y + 218f, 190f, 44f), "CONTINUAR [ESC]", estiloBotonModal))
+        float btnW = (w - 76f) * 0.5f;
+        if (GUI.Button(new Rect(x + 28f, y + h - 68f, btnW, 44f), "CONTINUAR [ESC]", estiloBotonModal))
         {
             AlternarMenuConfiguracion();
         }
 
-        if (GUI.Button(new Rect(x + 242f, y + 218f, 190f, 44f), "MENÚ PRINCIPAL", estiloBotonModal))
+        if (GUI.Button(new Rect(x + w - 28f - btnW, y + h - 68f, btnW, 44f), "MENÚ PRINCIPAL", estiloBotonModal))
         {
             IrAlMenuPrincipal();
         }
     }
 
-    private void DibujarModalVictoriaUnico()
+    private void DibujarModalVictoriaUnico(float vw, float vh)
     {
-        DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0.02f, 0.05f, 0.04f, 0.94f));
+        DibujarRectanguloColor(new Rect(0f, 0f, vw, vh), new Color(0.02f, 0.05f, 0.04f, 0.94f));
 
-        float w = 480f;
-        float h = 220f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = (Screen.height - h) * 0.5f;
+        float w = Mathf.Min(500f, vw - 24f);
+        float h = Mathf.Min(230f, vh - 24f);
+        float x = (vw - w) * 0.5f;
+        float y = (vh - h) * 0.5f;
 
         DibujarCajaConBorde(new Rect(x, y, w, h),
             new Color(0.06f, 0.08f, 0.10f, 0.96f),
@@ -2903,14 +2934,14 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             "Has restaurado las 3 fases eléctricas y escapado de La Que Escucha a las " + textoReloj + ".",
             estiloSubtituloMuerte);
 
-        if (GUI.Button(new Rect(x + (w - 240f) * 0.5f, y + 148f, 240f, 44f), "INICIAR NIVEL 3 ▶", estiloBotonModal))
+        if (GUI.Button(new Rect(x + (w - 240f) * 0.5f, y + h - 68f, 240f, 44f), "INICIAR NIVEL 3 ▶", estiloBotonModal))
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene("Nivel 3");
         }
     }
 
-    private void DibujarVinetaTerrorPantalla()
+    private void DibujarVinetaTerrorPantalla(float vw, float vh)
     {
         if (momia2 == null || !Application.isPlaying) return;
 
@@ -2930,17 +2961,17 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
         Color colorSangre = new Color(0.55f, 0.02f, 0.02f, factorPeligro);
         float grosor = Mathf.Lerp(20f, 80f, factorPeligro);
 
-        DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, grosor), colorSangre);
-        DibujarRectanguloColor(new Rect(0f, Screen.height - grosor, Screen.width, grosor), colorSangre);
-        DibujarRectanguloColor(new Rect(0f, 0f, grosor, Screen.height), colorSangre);
-        DibujarRectanguloColor(new Rect(Screen.width - grosor, 0f, grosor, Screen.height), colorSangre);
+        DibujarRectanguloColor(new Rect(0f, 0f, vw, grosor), colorSangre);
+        DibujarRectanguloColor(new Rect(0f, vh - grosor, vw, grosor), colorSangre);
+        DibujarRectanguloColor(new Rect(0f, 0f, grosor, vh), colorSangre);
+        DibujarRectanguloColor(new Rect(vw - grosor, 0f, grosor, vh), colorSangre);
     }
 
     /// <summary>
     /// FASE 1 (0 a 1.55s): Jumpscare violento a pantalla completa donde la Momia se abalanza hacia la cámara.
     /// FASE 2 (> 1.55s): Termina el jumpscare y aparece UN SOLO aviso limpio de Game Over sin amontonarse.
     /// </summary>
-    private void DibujarSecuenciaJumpscareYGameOverUnico()
+    private void DibujarSecuenciaJumpscareYGameOverUnico(float vw, float vh)
     {
         if (tiempoMuerteJumpscare < DuracionSecuenciaJumpscare)
         {
@@ -2950,7 +2981,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             Color colorFondoJumpscare = flashSangre
                 ? new Color(0.38f, 0.01f, 0.02f, 0.98f)
                 : new Color(0.02f, 0.01f, 0.02f, 0.98f);
-            DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, Screen.height), colorFondoJumpscare);
+            DibujarRectanguloColor(new Rect(0f, 0f, vw, vh), colorFondoJumpscare);
 
             if (texturasJumpscare == null || texturasJumpscare.Length == 0 || texturasJumpscare[0] == null)
             {
@@ -2968,7 +2999,7 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
                     float curvaImpacto = 1f - Mathf.Pow(1f - progresoEmbestida, 3f);
 
                     float multiplicadorAlto = Mathf.Lerp(0.85f, 2.25f, curvaImpacto);
-                    float altoImg = Screen.height * multiplicadorAlto;
+                    float altoImg = vh * multiplicadorAlto;
                     float aspectRatio = (float)texActual.width / Mathf.Max(1f, texActual.height);
                     float anchoImg = altoImg * aspectRatio;
 
@@ -2976,10 +3007,10 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
                     float shakeX = Mathf.Sin(tiempoMuerteJumpscare * 95f) * intensidadShake + Random.Range(-12f, 12f);
                     float shakeY = Mathf.Cos(tiempoMuerteJumpscare * 110f) * intensidadShake + Random.Range(-12f, 12f);
 
-                    float focoRostroY = Mathf.Lerp((Screen.height - altoImg) * 0.5f, -altoImg * 0.06f, curvaImpacto);
+                    float focoRostroY = Mathf.Lerp((vh - altoImg) * 0.5f, -altoImg * 0.06f, curvaImpacto);
 
                     Rect rectJumpscare = new Rect(
-                        (Screen.width - anchoImg) * 0.5f + shakeX,
+                        (vw - anchoImg) * 0.5f + shakeX,
                         focoRostroY + shakeY,
                         anchoImg,
                         altoImg
@@ -2996,18 +3027,18 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             }
 
             Color bordeRojo = new Color(0.75f, 0.02f, 0.02f, 0.55f);
-            DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, 36f), bordeRojo);
-            DibujarRectanguloColor(new Rect(0f, Screen.height - 36f, Screen.width, 36f), bordeRojo);
+            DibujarRectanguloColor(new Rect(0f, 0f, vw, 36f), bordeRojo);
+            DibujarRectanguloColor(new Rect(0f, vh - 36f, vw, 36f), bordeRojo);
             return;
         }
 
         // === FASE 2: UN SOLO AVISO LIMPIO DE GAME OVER ===
-        DibujarRectanguloColor(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0.08f, 0.01f, 0.02f, 0.96f));
+        DibujarRectanguloColor(new Rect(0f, 0f, vw, vh), new Color(0.08f, 0.01f, 0.02f, 0.96f));
 
-        float panelAncho = 500f;
-        float panelAlto = 225f;
-        float panelX = (Screen.width - panelAncho) * 0.5f;
-        float panelY = (Screen.height - panelAlto) * 0.5f;
+        float panelAncho = Mathf.Min(520f, vw - 24f);
+        float panelAlto = Mathf.Min(235f, vh - 24f);
+        float panelX = (vw - panelAncho) * 0.5f;
+        float panelY = (vh - panelAlto) * 0.5f;
 
         DibujarCajaConBorde(new Rect(panelX, panelY, panelAncho, panelAlto),
             new Color(0.06f, 0.07f, 0.09f, 0.96f),
@@ -3026,12 +3057,13 @@ public class SistemaMomiaYMicrofonoNivel2 : MonoBehaviour
             "Recuerda: camina con sigilo y mantén silencio en tu micrófono.",
             estiloSubtituloMuerte);
 
-        if (GUI.Button(new Rect(panelX + 42f, panelY + 156f, 195f, 44f), "REINTENTAR [R]", estiloBotonModal))
+        float goBtnW = (panelAncho - 90f) * 0.5f;
+        if (GUI.Button(new Rect(panelX + 35f, panelY + panelAlto - 66f, goBtnW, 44f), "REINTENTAR [R]", estiloBotonModal))
         {
             ReiniciarNivel2();
         }
 
-        if (GUI.Button(new Rect(panelX + 263f, panelY + 156f, 195f, 44f), "MENÚ PRINCIPAL", estiloBotonModal))
+        if (GUI.Button(new Rect(panelX + panelAncho - 35f - goBtnW, panelY + panelAlto - 66f, goBtnW, 44f), "MENÚ PRINCIPAL", estiloBotonModal))
         {
             IrAlMenuPrincipal();
         }

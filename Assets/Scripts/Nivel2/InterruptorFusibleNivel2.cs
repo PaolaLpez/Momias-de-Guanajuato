@@ -358,24 +358,35 @@ public class InterruptorFusibleNivel2 : MonoBehaviour
             Vector3 screenPos = cam.WorldToScreenPoint(transform.position + new Vector3(0, 1.4f, 0));
             if (screenPos.z > 0)
             {
-                float w = 280f;
-                float h = 30f;
-                Rect rect = new Rect(screenPos.x - w / 2, Screen.height - screenPos.y - h / 2, w, h);
-
-                GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.92f);
-                GUI.Box(rect, "");
-                GUI.color = Color.white;
-
-                GUIStyle style = new GUIStyle(GUI.skin.label)
+                float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+                try
                 {
-                    fontSize = 11,
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    richText = true
-                };
-                style.normal.textColor = Color.white;
+                    Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                    float w = 280f;
+                    float h = 30f;
+                    float x = Mathf.Clamp(guiPos.x - w / 2f, 8f, vw - w - 8f);
+                    float y = Mathf.Clamp(guiPos.y - h / 2f, 8f, vh - h - 8f);
+                    Rect rect = new Rect(x, y, w, h);
 
-                GUI.Label(rect, $"<color=#FFDD00>[E] Restaurar {nombreFase}</color>", style);
+                    GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.92f);
+                    GUI.Box(rect, "");
+                    GUI.color = Color.white;
+
+                    GUIStyle style = new GUIStyle(GUI.skin.label)
+                    {
+                        fontSize = 11,
+                        fontStyle = FontStyle.Bold,
+                        alignment = TextAnchor.MiddleCenter,
+                        richText = true
+                    };
+                    style.normal.textColor = Color.white;
+
+                    GUI.Label(rect, $"<color=#FFDD00>[E] Restaurar {nombreFase}</color>", style);
+                }
+                finally
+                {
+                    ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+                }
             }
         }
     }

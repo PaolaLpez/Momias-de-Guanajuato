@@ -104,6 +104,7 @@ public class TouchControlsManager : MonoBehaviour
 
         GarantizarEventSystem();
         CrearInterfazTactil();
+        ResetearEstadosPorNivel();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -115,11 +116,23 @@ public class TouchControlsManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         GarantizarEventSystem();
+        ResetearEstadosPorNivel();
+        ActualizarVisibilidadSegunNivel(scene.name);
+    }
+
+    public void ResetearEstadosPorNivel()
+    {
         sigiloActivo = false;
         botonCorrerForzado = false;
+        joystickCorriendo = false;
+        Movement = Vector2.zero;
+        IsInteractHeld = false;
+        IsJumpHeld = false;
+        justPressedInteract = false;
+        justPressedJump = false;
         ActualizarColorBotonStealth();
         ActualizarVisualBotonCorrer();
-        ActualizarVisibilidadSegunNivel(scene.name);
+        OcultarJoystick();
     }
 
     public void SetStealth(bool active)
@@ -469,8 +482,8 @@ public class TouchControlsManager : MonoBehaviour
 
     private void Update()
     {
-        // Si el jugador corre (Shift o botón correr), desactivar modo sigilo automáticamente
-        if (IsRunning && sigiloActivo)
+        // Si el jugador corre (Shift o botón correr) o el botón de sigilo no corresponde al nivel, desactivar sigilo
+        if ((IsRunning || (btnStealthRect != null && !btnStealthRect.gameObject.activeSelf)) && sigiloActivo)
         {
             sigiloActivo = false;
             ActualizarColorBotonStealth();

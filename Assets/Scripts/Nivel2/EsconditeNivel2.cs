@@ -97,7 +97,7 @@ public class EsconditeNivel2 : MonoBehaviour
                     Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
                     Collider2D col = GetComponent<Collider2D>();
                     if (col != null && col.OverlapPoint(worldTap)) return true;
-                    if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+                    if (Vector2.Distance(worldTap, transform.position) <= 1.35f) return true;
                 }
             }
         }
@@ -107,7 +107,7 @@ public class EsconditeNivel2 : MonoBehaviour
             Vector2 worldTap = Camera.main.ScreenToWorldPoint(sp);
             Collider2D col = GetComponent<Collider2D>();
             if (col != null && col.OverlapPoint(worldTap)) return true;
-            if (Vector2.Distance(worldTap, transform.position) <= 2.8f) return true;
+            if (Vector2.Distance(worldTap, transform.position) <= 1.35f) return true;
         }
         return false;
     }
@@ -138,7 +138,7 @@ public class EsconditeNivel2 : MonoBehaviour
                 SalirEscondite();
             }
         }
-        else if ((cerca || toque) && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || toque))
+        else if (cerca && (Input.GetKeyDown(KeyCode.E) || TouchControlsManager.IsInteractTriggered() || toque))
         {
             EntrarEscondite();
         }
@@ -243,7 +243,7 @@ public class EsconditeNivel2 : MonoBehaviour
 
     private void OnGUI()
     {
-        if (jugadorEnRango)
+        if (jugadorDentro || jugadorEnRango)
         {
             Camera cam = Camera.main;
             if (cam == null) return;
@@ -251,26 +251,37 @@ public class EsconditeNivel2 : MonoBehaviour
             Vector3 screenPos = cam.WorldToScreenPoint(transform.position + new Vector3(0, 1.35f, 0));
             if (screenPos.z > 0)
             {
-                float w = 210f;
-                float h = 26f;
-                Rect rect = new Rect(screenPos.x - w / 2, Screen.height - screenPos.y - h / 2, w, h);
-
-                string texto = jugadorDentro ? "<color=#FFCC00>[E] Salir del Escondite</color>" : $"<color=#00FFAA>[E] Ocultarse en {nombreEscondite}</color>";
-
-                GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.88f);
-                GUI.Box(rect, "");
-                GUI.color = Color.white;
-
-                GUIStyle style = new GUIStyle(GUI.skin.label)
+                float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+                try
                 {
-                    fontSize = 11,
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    richText = true
-                };
-                style.normal.textColor = Color.white;
+                    Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                    float w = 230f;
+                    float h = 28f;
+                    float x = Mathf.Clamp(guiPos.x - w / 2f, 8f, vw - w - 8f);
+                    float y = Mathf.Clamp(guiPos.y - h / 2f, 8f, vh - h - 8f);
+                    Rect rect = new Rect(x, y, w, h);
 
-                GUI.Label(rect, texto, style);
+                    string texto = jugadorDentro ? "<color=#FFCC00>[E] Salir del Escondite</color>" : $"<color=#00FFAA>[E] Ocultarse en {nombreEscondite}</color>";
+
+                    GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.88f);
+                    GUI.Box(rect, "");
+                    GUI.color = Color.white;
+
+                    GUIStyle style = new GUIStyle(GUI.skin.label)
+                    {
+                        fontSize = 11,
+                        fontStyle = FontStyle.Bold,
+                        alignment = TextAnchor.MiddleCenter,
+                        richText = true
+                    };
+                    style.normal.textColor = Color.white;
+
+                    GUI.Label(rect, texto, style);
+                }
+                finally
+                {
+                    ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+                }
             }
         }
     }

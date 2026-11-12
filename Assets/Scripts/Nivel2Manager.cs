@@ -135,111 +135,119 @@ public class Nivel2Manager : MonoBehaviour
 
         InitStyles();
 
-        // 1. HUD SUPERIOR: OBJETIVO Y CHECKLIST DE FASES
-        float panelW = 340f;
-        float panelH = 88f;
-        GUI.Box(new Rect(12, 12, panelW, panelH), "", boxStyle);
-
-        GUI.Label(new Rect(20, 14, panelW - 16, 18), "NIVEL 2: 1:00 AM - 2:00 AM", headerStyle);
-
-        GeneradorPrincipalNivel2 gen = GeneradorPrincipalNivel2.Instance;
-        int fuses = gen != null ? gen.fasesRestauradas : 0;
-        int maxFuses = gen != null ? gen.fasesRequeridas : 3;
-
-        bool f1 = gen != null && gen.EstaFaseRestaurada(1);
-        bool f2 = gen != null && gen.EstaFaseRestaurada(2);
-        bool f3 = gen != null && gen.EstaFaseRestaurada(3);
-
-        string f1Str = f1 ? "<color=#00FFAA>[✓] 1.Calderas</color>" : "<color=#888888>[ ] 1.Calderas</color>";
-        string f2Str = f2 ? "<color=#00FFAA>[✓] 2.Criptas</color>" : "<color=#888888>[ ] 2.Criptas</color>";
-        string f3Str = f3 ? "<color=#00FFAA>[✓] 3.Subestación</color>" : "<color=#888888>[ ] 3.Subestación</color>";
-
-        string faseStr = fuses >= maxFuses ? "<color=#00FFAA>¡ENERGÍA 100%! PUERTA ABIERTA</color>" : $"Energía: {fuses}/{maxFuses} Fases activadas";
-        GUI.Label(new Rect(20, 32, panelW - 16, 18), faseStr, textStyle);
-        GUI.Label(new Rect(20, 48, panelW - 16, 18), $"{f1Str}  {f2Str}  {f3Str}", textStyle);
-
-        // Barra de energía
-        float pct = Mathf.Clamp01((float)fuses / maxFuses);
-        GUI.DrawTexture(new Rect(20, 68, panelW - 40, 8), texBarraFondo);
-        GUI.DrawTexture(new Rect(20, 68, (panelW - 40) * pct, 8), fuses >= maxFuses ? texBarraVerde : texBarraAmarilla);
-
-        // Indicador de navegación directo hacia la Compuerta de Salida cuando la energía está al 100%
-        if (fuses >= maxFuses && !nivelCompletado && !juegoTerminado)
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 860f, 480f);
+        try
         {
-            float exitW = 500f;
-            float exitH = 36f;
-            Rect exitRect = new Rect((Screen.width - exitW) / 2f, 14f, exitW, exitH);
-            GUI.Box(exitRect, "", boxStyle);
+            // 1. HUD SUPERIOR: OBJETIVO Y CHECKLIST DE FASES
+            float panelW = 340f;
+            float panelH = 88f;
+            GUI.Box(new Rect(12, 12, panelW, panelH), "", boxStyle);
 
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            if (player == null) player = GameObject.Find("Vigilante");
-            float distSalida = player != null ? Vector2.Distance(player.transform.position, new Vector2(0f, 21.6f)) : 0f;
+            GUI.Label(new Rect(20, 14, panelW - 16, 18), "NIVEL 2: 1:00 AM - 2:00 AM", headerStyle);
 
-            GUIStyle exitStyle = new GUIStyle(textStyle)
+            GeneradorPrincipalNivel2 gen = GeneradorPrincipalNivel2.Instance;
+            int fuses = gen != null ? gen.fasesRestauradas : 0;
+            int maxFuses = gen != null ? gen.fasesRequeridas : 3;
+
+            bool f1 = gen != null && gen.EstaFaseRestaurada(1);
+            bool f2 = gen != null && gen.EstaFaseRestaurada(2);
+            bool f3 = gen != null && gen.EstaFaseRestaurada(3);
+
+            string f1Str = f1 ? "<color=#00FFAA>[✓] 1.Calderas</color>" : "<color=#888888>[ ] 1.Calderas</color>";
+            string f2Str = f2 ? "<color=#00FFAA>[✓] 2.Criptas</color>" : "<color=#888888>[ ] 2.Criptas</color>";
+            string f3Str = f3 ? "<color=#00FFAA>[✓] 3.Subestación</color>" : "<color=#888888>[ ] 3.Subestación</color>";
+
+            string faseStr = fuses >= maxFuses ? "<color=#00FFAA>¡ENERGÍA 100%! PUERTA ABIERTA</color>" : $"Energía: {fuses}/{maxFuses} Fases activadas";
+            GUI.Label(new Rect(20, 32, panelW - 16, 18), faseStr, textStyle);
+            GUI.Label(new Rect(20, 48, panelW - 16, 18), $"{f1Str}  {f2Str}  {f3Str}", textStyle);
+
+            // Barra de energía
+            float pct = Mathf.Clamp01((float)fuses / maxFuses);
+            GUI.DrawTexture(new Rect(20, 68, panelW - 40, 8), texBarraFondo);
+            GUI.DrawTexture(new Rect(20, 68, (panelW - 40) * pct, 8), fuses >= maxFuses ? texBarraVerde : texBarraAmarilla);
+
+            // Indicador de navegación directo hacia la Compuerta de Salida cuando la energía está al 100%
+            if (fuses >= maxFuses && !nivelCompletado && !juegoTerminado)
             {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 12,
-                fontStyle = FontStyle.Bold
-            };
-            GUI.Label(exitRect, $"<color=#00FFAA>▲ ¡ENERGÍA RESTAURADA! VE A LA GRAN COMPUERTA NORTE ({distSalida:F0}m) ▲</color>", exitStyle);
-        }
+                float exitW = Mathf.Min(500f, vw - 24f);
+                float exitH = 36f;
+                Rect exitRect = new Rect((vw - exitW) / 2f, 14f, exitW, exitH);
+                GUI.Box(exitRect, "", boxStyle);
 
-        // Banner de Alerta de Ruido en el centro de la pantalla
-        if (tiempoAlertaRuido > 0f)
-        {
-            float alertW = 340f;
-            float alertH = 34f;
-            Rect alertRect = new Rect((Screen.width - alertW) / 2f, 55f, alertW, alertH);
-            GUI.Box(alertRect, "", boxStyle);
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                if (player == null) player = GameObject.Find("Vigilante");
+                float distSalida = player != null ? Vector2.Distance(player.transform.position, new Vector2(0f, 21.6f)) : 0f;
 
-            GUIStyle alertStyle = new GUIStyle(textStyle)
+                GUIStyle exitStyle = new GUIStyle(textStyle)
+                {
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 12,
+                    fontStyle = FontStyle.Bold
+                };
+                GUI.Label(exitRect, $"<color=#00FFAA>▲ ¡ENERGÍA RESTAURADA! VE A LA GRAN COMPUERTA NORTE ({distSalida:F0}m) ▲</color>", exitStyle);
+            }
+
+            // Banner de Alerta de Ruido en el centro de la pantalla
+            if (tiempoAlertaRuido > 0f)
             {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 12,
-                fontStyle = FontStyle.Bold
-            };
-            GUI.Label(alertRect, $"<color=#FF3333>⚠ {alertaRuidoTexto} ⚠</color>", alertStyle);
-        }
+                float alertW = Mathf.Min(340f, vw - 24f);
+                float alertH = 34f;
+                Rect alertRect = new Rect((vw - alertW) / 2f, 55f, alertW, alertH);
+                GUI.Box(alertRect, "", boxStyle);
 
-        // Mini guía de controles en el pie de pantalla
-        GUI.Label(new Rect(12, Screen.height - 24, 600, 20),
-            "<color=#888888>WASD/Flechas: Mover | Shift: Correr (¡Peligro de ruido!) | E: Interactuar/Esconderse | ESC: Menú</color>", textStyle);
+                GUIStyle alertStyle = new GUIStyle(textStyle)
+                {
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 12,
+                    fontStyle = FontStyle.Bold
+                };
+                GUI.Label(alertRect, $"<color=#FF3333>⚠ {alertaRuidoTexto} ⚠</color>", alertStyle);
+            }
 
-        // 2. MODAL DE VICTORIA
-        if (nivelCompletado)
-        {
-            float w = 460f;
-            float h = 230f;
-            Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+            // Mini guía de controles en el pie de pantalla
+            GUI.Label(new Rect(12, vh - 24, Mathf.Min(600f, vw - 24f), 20),
+                "<color=#888888>WASD/Flechas: Mover | Shift: Correr (¡Peligro de ruido!) | E: Interactuar/Esconderse | ESC: Menú</color>", textStyle);
 
-            GUI.Box(center, "", boxStyle);
-            GUI.Label(new Rect(center.x + 20, center.y + 20, w - 40, 35), "¡NIVEL 2 SUPERADO!", titleStyle);
-            GUI.Label(new Rect(center.x + 20, center.y + 65, w - 40, 50),
-                "Has restaurado la energía eléctrica y escapado del subsuelo subterráneo con éxito.", textStyle);
-
-            if (GUI.Button(new Rect(center.x + (w - 220) / 2f, center.y + 150, 220, 42), "INICIAR NIVEL 3 ▶", buttonStyle))
+            // 2. MODAL DE VICTORIA
+            if (nivelCompletado)
             {
-                Time.timeScale = 1f;
-                SceneManager.LoadScene("Nivel 3");
+                float w = Mathf.Min(460f, vw - 24f);
+                float h = Mathf.Min(230f, vh - 24f);
+                Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
+
+                GUI.Box(center, "", boxStyle);
+                GUI.Label(new Rect(center.x + 20, center.y + 20, w - 40, 35), "¡NIVEL 2 SUPERADO!", titleStyle);
+                GUI.Label(new Rect(center.x + 20, center.y + 65, w - 40, 50),
+                    "Has restaurado la energía eléctrica y escapado del subsuelo subterráneo con éxito.", textStyle);
+
+                if (GUI.Button(new Rect(center.x + (w - 220) / 2f, center.y + 150, 220, 42), "INICIAR NIVEL 3 ▶", buttonStyle))
+                {
+                    Time.timeScale = 1f;
+                    SceneManager.LoadScene("Nivel 3");
+                }
+            }
+
+            // 3. MODAL DE GAME OVER
+            if (juegoTerminado)
+            {
+                float w = Mathf.Min(440f, vw - 24f);
+                float h = Mathf.Min(220f, vh - 24f);
+                Rect center = new Rect((vw - w) / 2f, (vh - h) / 2f, w, h);
+
+                GUI.Box(center, "", boxStyle);
+                GUI.Label(new Rect(center.x + 20, center.y + 20, w - 40, 35), "GAME OVER", titleStyle);
+                GUI.Label(new Rect(center.x + 20, center.y + 65, w - 40, 50),
+                    "La momia que escucha detectó tus pasos en la oscuridad.\nRecuerda: camina en silencio y evita los charcos y cristales rotos.", textStyle);
+
+                if (GUI.Button(new Rect(center.x + (w - 180) / 2f, center.y + 145, 180, 40), "REINTENTAR", buttonStyle))
+                {
+                    ReintentarNivel();
+                }
             }
         }
-
-        // 3. MODAL DE GAME OVER
-        if (juegoTerminado)
+        finally
         {
-            float w = 440f;
-            float h = 220f;
-            Rect center = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
-
-            GUI.Box(center, "", boxStyle);
-            GUI.Label(new Rect(center.x + 20, center.y + 20, w - 40, 35), "GAME OVER", titleStyle);
-            GUI.Label(new Rect(center.x + 20, center.y + 65, w - 40, 50),
-                "La momia que escucha detectó tus pasos en la oscuridad.\nRecuerda: camina en silencio y evita los charcos y cristales rotos.", textStyle);
-
-            if (GUI.Button(new Rect(center.x + (w - 180) / 2f, center.y + 145, 180, 40), "REINTENTAR", buttonStyle))
-            {
-                ReintentarNivel();
-            }
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 
