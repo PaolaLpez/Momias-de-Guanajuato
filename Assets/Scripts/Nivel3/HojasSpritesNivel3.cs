@@ -100,6 +100,43 @@ public static class HojasSpritesNivel3
         escorpiones = null;
     }
 
+    private static readonly string[] RutasResourcesMomias = {
+        "Momia/media_1793846201701_4b88749a",
+        "Momia/media_1793805854090_18e915b9"
+    };
+    private static readonly string[] RutasResourcesEscorpiones = {
+        "Momia/media_1793806041880_b454b234"
+    };
+
+    private static Texture2D CargarTexturaFuente(string[] resourcePaths, string[] diskPaths)
+    {
+        if (resourcePaths != null)
+        {
+            foreach (string resPath in resourcePaths)
+            {
+                Texture2D resTex = Resources.Load<Texture2D>(resPath);
+                if (resTex != null && resTex.isReadable)
+                {
+                    return resTex;
+                }
+            }
+        }
+
+#if UNITY_EDITOR
+        byte[] bytes = LeerBytes(diskPaths);
+        if (bytes != null)
+        {
+            Texture2D src = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (src.LoadImage(bytes))
+            {
+                return src;
+            }
+        }
+#endif
+        return null;
+    }
+
+#if UNITY_EDITOR
     private static byte[] LeerBytes(string[] rutas)
     {
         try
@@ -111,25 +148,6 @@ public static class HojasSpritesNivel3
                     byte[] data = File.ReadAllBytes(r);
                     if (data != null && data.Length > 0)
                     {
-                        // Copiar al directorio de Resources local si no existe para persistencia
-                        try
-                        {
-                            string localDir = Application.dataPath + "/Resources/Momia";
-                            if (!Directory.Exists(localDir)) Directory.CreateDirectory(localDir);
-                            string destName = Path.GetFileName(r);
-                            string destPath = Path.Combine(localDir, destName);
-                            if (!File.Exists(destPath) && !string.Equals(Path.GetFullPath(r), Path.GetFullPath(destPath), System.StringComparison.OrdinalIgnoreCase))
-                            {
-                                File.Copy(r, destPath, true);
-                            }
-                            string destPath2 = Path.Combine(localDir, "momia_gemelas_sheet.jpg");
-                            if (!string.Equals(Path.GetFullPath(r), Path.GetFullPath(destPath2), System.StringComparison.OrdinalIgnoreCase))
-                            {
-                                File.Copy(r, destPath2, true);
-                            }
-                        }
-                        catch { }
-
                         return data;
                     }
                 }
@@ -141,14 +159,13 @@ public static class HojasSpritesNivel3
         }
         return null;
     }
+#endif
 
     private static List<Sprite> ProcesarMomias()
     {
-        byte[] bytes = LeerBytes(RutasMomias);
-        if (bytes != null)
+        Texture2D src = CargarTexturaFuente(RutasResourcesMomias, RutasMomias);
+        if (src != null)
         {
-            Texture2D src = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (src.LoadImage(bytes))
             {
                 int W = src.width;
                 int H = src.height;
@@ -215,11 +232,9 @@ public static class HojasSpritesNivel3
 
     private static List<Sprite> ProcesarEscorpiones()
     {
-        byte[] bytes = LeerBytes(RutasEscorpiones);
-        if (bytes != null)
+        Texture2D src = CargarTexturaFuente(RutasResourcesEscorpiones, RutasEscorpiones);
+        if (src != null)
         {
-            Texture2D src = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (src.LoadImage(bytes))
             {
                 int W = src.width;
                 int H = src.height;

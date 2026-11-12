@@ -21,8 +21,10 @@ public class PreparadorAssetsNivel3 : MonoBehaviour
         if (yaProcesado && Application.isPlaying) return;
         yaProcesado = true;
 
+#if UNITY_EDITOR
         ProcesarAudioEscorpion();
         ProcesarSpritesEscorpion();
+#endif
     }
 
     private static void ProcesarAudioEscorpion()

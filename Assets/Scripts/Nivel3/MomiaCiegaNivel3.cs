@@ -190,8 +190,8 @@ public class MomiaCiegaNivel3 : MonoBehaviour
         }
         else
         {
-            // Detectar si el jugador corre con Shift
-            bool corriendo = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            // Detectar si el jugador corre con Shift o botón táctil de carrera
+            bool corriendo = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || TouchControlsManager.IsRunning;
             if (corriendo && distanciaAlJugador < 18f)
             {
                 AlertarRuido(playerTransform.position, "¡Tus pasos apresurados alertaron a la Gemela Ciega!");

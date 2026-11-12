@@ -266,165 +266,173 @@ public class KeypadCajaFuerteNivel3 : MonoBehaviour
         if (!modalAbierto || cajaAbierta) return;
         InicializarTexturasUI();
 
-        // Oscurecer fondo de juego
-        GUI.color = new Color(0f, 0f, 0f, 0.75f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
-        GUI.color = Color.white;
-
-        float w = 340f;
-        float h = 400f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = Mathf.Clamp((Screen.height - h) * 0.5f + 10f, 76f, Screen.height - h - 45f);
-
-        // Panel de Acero de la Caja Fuerte
-        GUI.DrawTexture(new Rect(x, y, w, h), texFondoAcero);
-
-        // Marco exterior reforzado de bronce/acero
-        GUI.color = new Color(0.55f, 0.45f, 0.25f, 0.9f);
-        GUI.DrawTexture(new Rect(x, y, w, 3f), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(x, y + h - 3f, w, 3f), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(x, y, 3f, h), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(x + w - 3f, y, 3f, h), Texture2D.whiteTexture);
-        GUI.color = Color.white;
-
-        // Título Industrial
-        GUIStyle estiloHeader = new GUIStyle(GUI.skin.label)
+        ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 860f, 480f);
+        try
         {
-            fontSize = 12,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = new Color(0.95f, 0.85f, 0.35f) }
-        };
-        GUI.Label(new Rect(x + 10, y + 8, w - 20, 18), "CÁMARA ACORAZADA — CAJA DE SEGURIDAD", estiloHeader);
+            // Oscurecer fondo de juego
+            GUI.color = new Color(0f, 0f, 0f, 0.75f);
+            GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
+            GUI.color = Color.white;
 
-        GUIStyle estiloSub = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 9,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = new Color(0.65f, 0.72f, 0.80f) }
-        };
-        GUI.Label(new Rect(x + 10, y + 26, w - 20, 14), "MUSEO REGIONAL • SISTEMA COMBINATORIO 1937", estiloSub);
+            float w = Mathf.Min(350f, vw - 24f);
+            float h = Mathf.Min(400f, vh - 24f);
+            float x = (vw - w) * 0.5f;
+            float y = (vh - h) * 0.5f;
 
-        // Pantalla Digital CRT de Fósforo Verde (o Rojo si hay error)
-        Rect rectPantalla = new Rect(x + 25, y + 44, w - 50, 52);
-        GUI.DrawTexture(rectPantalla, texPantallaCRT);
+            // Panel de Acero de la Caja Fuerte
+            GUI.DrawTexture(new Rect(x, y, w, h), texFondoAcero);
 
-        // Marco de la pantalla
-        Color colBordePantalla = timerError > 0f ? Color.red : new Color(0.15f, 0.8f, 0.35f);
-        GUI.color = colBordePantalla;
-        GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y, rectPantalla.width, 2f), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y + rectPantalla.height - 2f, rectPantalla.width, 2f), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y, 2f, rectPantalla.height), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(rectPantalla.x + rectPantalla.width - 2f, rectPantalla.y, 2f, rectPantalla.height), Texture2D.whiteTexture);
-        GUI.color = Color.white;
+            // Marco exterior reforzado de bronce/acero
+            GUI.color = new Color(0.55f, 0.45f, 0.25f, 0.9f);
+            GUI.DrawTexture(new Rect(x, y, w, 3f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x, y + h - 3f, w, 3f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x, y, 3f, h), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x + w - 3f, y, 3f, h), Texture2D.whiteTexture);
+            GUI.color = Color.white;
 
-        // Texto en pantalla digital
-        string displayStr = "[ " + (codigoIngresado.Length > 0 ? codigoIngresado[0].ToString() : "_") + " ]   " +
-                            "[ " + (codigoIngresado.Length > 1 ? codigoIngresado[1].ToString() : "_") + " ]   " +
-                            "[ " + (codigoIngresado.Length > 2 ? codigoIngresado[2].ToString() : "_") + " ]";
-
-        GUIStyle estiloDisplay = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 22,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = timerError > 0f ? Color.red : new Color(0.2f, 1.0f, 0.45f) }
-        };
-        GUI.Label(new Rect(rectPantalla.x, rectPantalla.y + 4, rectPantalla.width, 28), displayStr, estiloDisplay);
-
-        // Estado bajo la pantalla
-        string txtEstado = timerError > 0f ? "⚠ ¡ALARMA! CÓDIGO INVÁLIDO ⚠" : "INGRESE 3 CIFRAS";
-        GUIStyle estiloSubPantalla = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 9,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = timerError > 0f ? Color.red : new Color(0.45f, 0.85f, 0.55f) }
-        };
-        GUI.Label(new Rect(rectPantalla.x, rectPantalla.y + 32, rectPantalla.width, 16), txtEstado, estiloSubPantalla);
-
-        // Teclado Numérico 3x3
-        float btnW = 68f;
-        float btnH = 38f;
-        float gapX = 10f;
-        float gapY = 8f;
-        float startX = x + (w - (btnW * 3 + gapX * 2)) * 0.5f;
-        float startY = y + 104f;
-
-        GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
-        {
-            fontSize = 17,
-            fontStyle = FontStyle.Bold,
-            normal = { textColor = new Color(0.95f, 0.95f, 0.95f) }
-        };
-
-        int num = 1;
-        for (int fila = 0; fila < 3; fila++)
-        {
-            for (int col = 0; col < 3; col++)
+            // Título Industrial
+            GUIStyle estiloHeader = new GUIStyle(GUI.skin.label)
             {
-                string sNum = num.ToString();
-                Rect rBtn = new Rect(startX + col * (btnW + gapX), startY + fila * (btnH + gapY), btnW, btnH);
-                if (GUI.Button(rBtn, sNum, btnStyle))
+                fontSize = 12,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = new Color(0.95f, 0.85f, 0.35f) }
+            };
+            GUI.Label(new Rect(x + 10, y + 8, w - 20, 18), "CÁMARA ACORAZADA — CAJA DE SEGURIDAD", estiloHeader);
+
+            GUIStyle estiloSub = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 9,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = new Color(0.65f, 0.72f, 0.80f) }
+            };
+            GUI.Label(new Rect(x + 10, y + 26, w - 20, 14), "MUSEO REGIONAL • SISTEMA COMBINATORIO 1937", estiloSub);
+
+            // Pantalla Digital CRT de Fósforo Verde (o Rojo si hay error)
+            Rect rectPantalla = new Rect(x + 25, y + 44, w - 50, 52);
+            GUI.DrawTexture(rectPantalla, texPantallaCRT);
+
+            // Marco de la pantalla
+            Color colBordePantalla = timerError > 0f ? Color.red : new Color(0.15f, 0.8f, 0.35f);
+            GUI.color = colBordePantalla;
+            GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y, rectPantalla.width, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y + rectPantalla.height - 2f, rectPantalla.width, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rectPantalla.x, rectPantalla.y, 2f, rectPantalla.height), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(rectPantalla.x + rectPantalla.width - 2f, rectPantalla.y, 2f, rectPantalla.height), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+
+            // Texto en pantalla digital
+            string displayStr = "[ " + (codigoIngresado.Length > 0 ? codigoIngresado[0].ToString() : "_") + " ]   " +
+                                "[ " + (codigoIngresado.Length > 1 ? codigoIngresado[1].ToString() : "_") + " ]   " +
+                                "[ " + (codigoIngresado.Length > 2 ? codigoIngresado[2].ToString() : "_") + " ]";
+
+            GUIStyle estiloDisplay = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 22,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = timerError > 0f ? Color.red : new Color(0.2f, 1.0f, 0.45f) }
+            };
+            GUI.Label(new Rect(rectPantalla.x, rectPantalla.y + 4, rectPantalla.width, 28), displayStr, estiloDisplay);
+
+            // Estado bajo la pantalla
+            string txtEstado = timerError > 0f ? "⚠ ¡ALARMA! CÓDIGO INVÁLIDO ⚠" : "INGRESE 3 CIFRAS";
+            GUIStyle estiloSubPantalla = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 9,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = timerError > 0f ? Color.red : new Color(0.45f, 0.85f, 0.55f) }
+            };
+            GUI.Label(new Rect(rectPantalla.x, rectPantalla.y + 32, rectPantalla.width, 16), txtEstado, estiloSubPantalla);
+
+            // Teclado Numérico 3x3
+            float btnW = 68f;
+            float btnH = 38f;
+            float gapX = 10f;
+            float gapY = 8f;
+            float startX = x + (w - (btnW * 3 + gapX * 2)) * 0.5f;
+            float startY = y + 104f;
+
+            GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 17,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = new Color(0.95f, 0.95f, 0.95f) }
+            };
+
+            int num = 1;
+            for (int fila = 0; fila < 3; fila++)
+            {
+                for (int col = 0; col < 3; col++)
                 {
-                    AgregarDigito(sNum);
+                    string sNum = num.ToString();
+                    Rect rBtn = new Rect(startX + col * (btnW + gapX), startY + fila * (btnH + gapY), btnW, btnH);
+                    if (GUI.Button(rBtn, sNum, btnStyle))
+                    {
+                        AgregarDigito(sNum);
+                    }
+                    num++;
                 }
-                num++;
+            }
+
+            // Fila inferior: DEL, 0, OK
+            float fila4Y = startY + 3 * (btnH + gapY);
+
+            GUIStyle btnDelStyle = new GUIStyle(btnStyle);
+            btnDelStyle.fontSize = 14;
+            btnDelStyle.normal.textColor = new Color(1f, 0.4f, 0.4f);
+            if (GUI.Button(new Rect(startX, fila4Y, btnW, btnH), "DEL", btnDelStyle))
+            {
+                BorrarUltimo();
+            }
+
+            if (GUI.Button(new Rect(startX + (btnW + gapX), fila4Y, btnW, btnH), "0", btnStyle))
+            {
+                AgregarDigito("0");
+            }
+
+            GUIStyle btnOkStyle = new GUIStyle(btnStyle);
+            btnOkStyle.fontSize = 14;
+            btnOkStyle.normal.textColor = new Color(0.3f, 1f, 0.5f);
+            if (GUI.Button(new Rect(startX + 2 * (btnW + gapX), fila4Y, btnW, btnH), "OK", btnOkStyle))
+            {
+                VerificarCodigo();
+            }
+
+            // Libreta de pistas de ayuda
+            int? c1 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra1 : null;
+            int? c2 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra2 : null;
+            int? c3 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra3 : null;
+
+            string ayudaLibreta = "PISTAS:  " +
+                                  "Camilla: [" + (c1.HasValue ? c1.Value.ToString() : "_") + "]  " +
+                                  "Lab: [" + (c2.HasValue ? c2.Value.ToString() : "_") + "]  " +
+                                  "Morgue: [" + (c3.HasValue ? c3.Value.ToString() : "_") + "]";
+
+            GUIStyle estiloPistas = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 10,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = new Color(0.95f, 0.85f, 0.3f) }
+            };
+            GUI.Label(new Rect(x + 10, y + 296f, w - 20, 16), ayudaLibreta, estiloPistas);
+
+            // Botón Salir / Cancelar
+            GUIStyle btnSalir = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 11,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = new Color(0.85f, 0.85f, 0.85f) }
+            };
+            if (GUI.Button(new Rect(x + (w - 180f) * 0.5f, y + h - 46f, 180f, 32f), "CERRAR KEYPAD [F / ESC]", btnSalir))
+            {
+                CerrarKeypad();
             }
         }
-
-        // Fila inferior: DEL, 0, OK
-        float fila4Y = startY + 3 * (btnH + gapY);
-
-        GUIStyle btnDelStyle = new GUIStyle(btnStyle);
-        btnDelStyle.fontSize = 14;
-        btnDelStyle.normal.textColor = new Color(1f, 0.4f, 0.4f);
-        if (GUI.Button(new Rect(startX, fila4Y, btnW, btnH), "DEL", btnDelStyle))
+        finally
         {
-            BorrarUltimo();
-        }
-
-        if (GUI.Button(new Rect(startX + (btnW + gapX), fila4Y, btnW, btnH), "0", btnStyle))
-        {
-            AgregarDigito("0");
-        }
-
-        GUIStyle btnOkStyle = new GUIStyle(btnStyle);
-        btnOkStyle.fontSize = 14;
-        btnOkStyle.normal.textColor = new Color(0.3f, 1f, 0.5f);
-        if (GUI.Button(new Rect(startX + 2 * (btnW + gapX), fila4Y, btnW, btnH), "OK", btnOkStyle))
-        {
-            VerificarCodigo();
-        }
-
-        // Libreta de pistas de ayuda
-        int? c1 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra1 : null;
-        int? c2 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra2 : null;
-        int? c3 = Nivel3Manager.Instance != null ? Nivel3Manager.Instance.cifra3 : null;
-
-        string ayudaLibreta = "PISTAS:  " +
-                              "Camilla: [" + (c1.HasValue ? c1.Value.ToString() : "_") + "]  " +
-                              "Lab: [" + (c2.HasValue ? c2.Value.ToString() : "_") + "]  " +
-                              "Morgue: [" + (c3.HasValue ? c3.Value.ToString() : "_") + "]";
-
-        GUIStyle estiloPistas = new GUIStyle(GUI.skin.label)
-        {
-            fontSize = 10,
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = new Color(0.95f, 0.85f, 0.3f) }
-        };
-        GUI.Label(new Rect(x + 10, y + 296f, w - 20, 16), ayudaLibreta, estiloPistas);
-
-        // Botón Salir / Cancelar
-        GUIStyle btnSalir = new GUIStyle(GUI.skin.button)
-        {
-            fontSize = 11,
-            fontStyle = FontStyle.Bold,
-            normal = { textColor = new Color(0.85f, 0.85f, 0.85f) }
-        };
-        if (GUI.Button(new Rect(x + (w - 180f) * 0.5f, y + 322f, 180f, 28), "CERRAR KEYPAD [F / ESC]", btnSalir))
-        {
-            CerrarKeypad();
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
         }
     }
 
