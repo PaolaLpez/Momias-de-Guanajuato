@@ -166,39 +166,50 @@ public class ValvulaVaporNivel2 : MonoBehaviour
             Vector3 screenPos = cam.WorldToScreenPoint(transform.position + new Vector3(0, 1.25f, 0));
             if (screenPos.z > 0)
             {
-                float w = 240f;
-                float h = 26f;
-                Rect rect = new Rect(screenPos.x - w / 2, Screen.height - screenPos.y - h / 2, w, h);
-
-                string texto;
-                if (estaActiva)
+                float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+                try
                 {
-                    texto = $"<color=#00FFFF>Vapor Activo ({Mathf.CeilToInt(tiempoRestante)}s)</color>";
+                    Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+                    float w = 240f;
+                    float h = 26f;
+                    float x = Mathf.Clamp(guiPos.x - w / 2f, 8f, vw - w - 8f);
+                    float y = Mathf.Clamp(guiPos.y - h / 2f, 8f, vh - h - 8f);
+                    Rect rect = new Rect(x, y, w, h);
+
+                    string texto;
+                    if (estaActiva)
+                    {
+                        texto = $"<color=#00FFFF>Vapor Activo ({Mathf.CeilToInt(tiempoRestante)}s)</color>";
+                    }
+                    else if (PuedeActivarse())
+                    {
+                        texto = "<color=#FFFF00>[E] Abrir Válvula de Vapor</color>";
+                    }
+                    else
+                    {
+                        int cd = Mathf.CeilToInt(tiempoRecarga - (Time.time - ultimoUso));
+                        texto = $"<color=#888888>Presión Recargando ({cd}s)</color>";
+                    }
+
+                    GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.88f);
+                    GUI.Box(rect, "");
+                    GUI.color = Color.white;
+
+                    GUIStyle style = new GUIStyle(GUI.skin.label)
+                    {
+                        fontSize = 11,
+                        fontStyle = FontStyle.Bold,
+                        alignment = TextAnchor.MiddleCenter,
+                        richText = true
+                    };
+                    style.normal.textColor = Color.white;
+
+                    GUI.Label(rect, texto, style);
                 }
-                else if (PuedeActivarse())
+                finally
                 {
-                    texto = "<color=#FFFF00>[E] Abrir Válvula de Vapor</color>";
+                    ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
                 }
-                else
-                {
-                    int cd = Mathf.CeilToInt(tiempoRecarga - (Time.time - ultimoUso));
-                    texto = $"<color=#888888>Presión Recargando ({cd}s)</color>";
-                }
-
-                GUI.color = new Color(0.08f, 0.08f, 0.12f, 0.88f);
-                GUI.Box(rect, "");
-                GUI.color = Color.white;
-
-                GUIStyle style = new GUIStyle(GUI.skin.label)
-                {
-                    fontSize = 11,
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    richText = true
-                };
-                style.normal.textColor = Color.white;
-
-                GUI.Label(rect, texto, style);
             }
         }
     }

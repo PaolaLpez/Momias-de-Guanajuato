@@ -165,6 +165,42 @@ public class PlayerController : MonoBehaviour
         }
 
         CargarSprites();
+        RestablecerEstadoDePie();
+    }
+
+    private void Start()
+    {
+        RestablecerEstadoDePie();
+    }
+
+    /// <summary>
+    /// Garantiza que la Vigilante comience cada nivel parada, caminando normal
+    /// y sin heredar modo sigilo o carrera de escenas anteriores.
+    /// </summary>
+    public void RestablecerEstadoDePie()
+    {
+        SistemaMomiaYMicrofonoNivel2.ResetearModoSigiloGlobal();
+        if (TouchControlsManager.Instance != null)
+        {
+            TouchControlsManager.Instance.ResetearEstadosPorNivel();
+        }
+        estaEscondido = false;
+        estaSaltando = false;
+        tiempoSalto = 0f;
+        currentFrame = 0;
+        animTimer = 0f;
+        if (visualChild != null)
+        {
+            visualChild.gameObject.SetActive(true);
+            visualChild.localPosition = Vector3.zero;
+            visualChild.localRotation = Quaternion.identity;
+            visualChild.localScale = Vector3.one;
+        }
+        if (sr != null)
+        {
+            sr.enabled = true;
+            if (idleSprite != null) sr.sprite = idleSprite;
+        }
     }
 
     void CargarSprites()

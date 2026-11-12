@@ -526,23 +526,26 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
         // Máxima prioridad de render: se dibuja por encima de todo
         GUI.depth = -500;
 
-        float ancho = Mathf.Min(840f, Screen.width * 0.94f);
-        float alto = Mathf.Min(610f, Screen.height * 0.92f);
-        float posX = (Screen.width - ancho) / 2f;
-        float posY = (Screen.height - alto) / 2f;
-        Rect marcoTotal = new Rect(posX, posY, ancho, alto);
-        ultimoMarcoTotalRect = marcoTotal;
+        float scale = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix, 890f, 640f);
+        try
+        {
+            float ancho = Mathf.Min(860f, vw * 0.94f);
+            float alto = Mathf.Min(610f, vh * 0.94f);
+            float posX = (vw - ancho) / 2f;
+            float posY = (vh - alto) / 2f;
+            Rect marcoTotal = new Rect(posX, posY, ancho, alto);
+            ultimoMarcoTotalRect = ResponsiveGUIHelper.VirtualRectToScreen(marcoTotal, scale);
 
-        // 1. Oscurecimiento cinematográfico de fondo (elimina cualquier distracción)
-        GUI.color = new Color(0.04f, 0.04f, 0.05f, 0.95f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
+            // 1. Oscurecimiento cinematográfico de fondo (elimina cualquier distracción)
+            GUI.color = new Color(0.04f, 0.04f, 0.05f, 0.95f);
+            GUI.DrawTexture(new Rect(0, 0, vw, vh), Texture2D.whiteTexture);
 
-        // Viñeta periférica oscura
-        GUI.color = new Color(0f, 0f, 0f, 0.55f);
-        GUI.DrawTexture(new Rect(0, 0, Screen.width, posY), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(0, posY + alto, Screen.width, Screen.height - (posY + alto)), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(0, posY, posX, alto), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(posX + ancho, posY, Screen.width - (posX + ancho), alto), Texture2D.whiteTexture);
+            // Viñeta periférica oscura
+            GUI.color = new Color(0f, 0f, 0f, 0.55f);
+            GUI.DrawTexture(new Rect(0, 0, vw, posY), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, posY + alto, vw, vh - (posY + alto)), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(0, posY, posX, alto), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(posX + ancho, posY, vw - (posX + ancho), alto), Texture2D.whiteTexture);
 
         // 2. Gran placa base de lámina de hierro forjado desgastada
         GUI.color = Color.white;
@@ -609,59 +612,64 @@ public class PlanoSubterraneoNivel2 : MonoBehaviour
         tituloEstilo.normal.textColor = new Color(0.96f, 0.90f, 0.78f, 1f); // Tono marfil grabado
         GUI.Label(new Rect(headerRect.x, headerRect.y + 22, headerRect.width, 24), "⚜ PLANO DE RED ELÉCTRICA Y GALERÍAS SUBTERRÁNEAS (1894) ⚜", tituloEstilo);
 
-        // Botón [✕ CERRAR] en forma de chapa de hierro forjado
-        Rect btnCerrarRect = new Rect(posX + ancho - 145, posY + 20, 115, 36);
-        ultimoBtnCerrarRect = btnCerrarRect;
-        GUI.color = new Color(0.18f, 0.15f, 0.13f, 1f);
-        GUI.DrawTexture(btnCerrarRect, Texture2D.whiteTexture);
-        DibujarBorde(btnCerrarRect, 2f, new Color(0.55f, 0.42f, 0.28f, 1f));
-        GUI.color = Color.white;
+            // Botón [✕ CERRAR] en forma de chapa de hierro forjado
+            Rect btnCerrarRect = new Rect(posX + ancho - 145, posY + 20, 115, 36);
+            ultimoBtnCerrarRect = ResponsiveGUIHelper.VirtualRectToScreen(btnCerrarRect, scale);
+            GUI.color = new Color(0.18f, 0.15f, 0.13f, 1f);
+            GUI.DrawTexture(btnCerrarRect, Texture2D.whiteTexture);
+            DibujarBorde(btnCerrarRect, 2f, new Color(0.55f, 0.42f, 0.28f, 1f));
+            GUI.color = Color.white;
 
-        GUIStyle btnEstilo = new GUIStyle(GUI.skin.button)
-        {
-            fontSize = 12,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter
-        };
-        btnEstilo.normal.textColor = new Color(0.95f, 0.88f, 0.75f, 1f);
-        if (GUI.Button(btnCerrarRect, "✕ CERRAR [ESC]", btnEstilo))
-        {
-            CerrarVisorPlano();
+            GUIStyle btnEstilo = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 12,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            btnEstilo.normal.textColor = new Color(0.95f, 0.88f, 0.75f, 1f);
+            if (GUI.Button(btnCerrarRect, "✕ CERRAR [ESC]", btnEstilo))
+            {
+                CerrarVisorPlano();
+            }
+
+            // 4. Área central del plano arquitectónico
+            Rect areaMapa = new Rect(posX + 26, posY + 74, ancho - 52, alto - 144);
+            DibujarPlanoArquitectonico(areaMapa);
+
+            // 5. Barra inferior de estado (chapa metálica remachada)
+            Rect footerRect = new Rect(posX + 26, posY + alto - 62, ancho - 52, 48);
+            GUI.color = new Color(0.12f, 0.11f, 0.10f, 1f);
+            GUI.DrawTexture(footerRect, Texture2D.whiteTexture);
+            DibujarBorde(footerRect, 2f, new Color(0.38f, 0.28f, 0.18f, 1f));
+            GUI.color = Color.white;
+
+            DibujarTornillo(footerRect.x + 4, footerRect.y + 4);
+            DibujarTornillo(footerRect.xMax - 20, footerRect.y + 4);
+            DibujarTornillo(footerRect.x + 4, footerRect.yMax - 20);
+            DibujarTornillo(footerRect.xMax - 20, footerRect.yMax - 20);
+
+            string sectorActual = ObtenerNombreSectorJugador();
+            int fasesCompletadas = ObtenerFasesCompletadas();
+
+            GUIStyle infoEstilo = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleCenter,
+                richText = true
+            };
+            infoEstilo.normal.textColor = new Color(0.85f, 0.80f, 0.72f, 1f);
+
+            string colorFases = (fasesCompletadas >= 3) ? "#66FF66" : (fasesCompletadas > 0 ? "#FFCC44" : "#FF5544");
+            string textoInfo = $"<b>SECTOR ACTUAL:</b> <color=#F0D090>{sectorActual.ToUpper()}</color>    |    " +
+                               $"<b>RED ELÉCTRICA:</b> <color={colorFases}>{fasesCompletadas} / 3 FASES CON CORRIENTE</color>    |    " +
+                               $"Presiona <b>[ESC]</b> para cerrar el plano";
+
+            GUI.Label(new Rect(footerRect.x + 20, footerRect.y + 12, footerRect.width - 40, 26), textoInfo, infoEstilo);
         }
-
-        // 4. Área central del plano arquitectónico
-        Rect areaMapa = new Rect(posX + 26, posY + 74, ancho - 52, alto - 144);
-        DibujarPlanoArquitectonico(areaMapa);
-
-        // 5. Barra inferior de estado (chapa metálica remachada)
-        Rect footerRect = new Rect(posX + 26, posY + alto - 62, ancho - 52, 48);
-        GUI.color = new Color(0.12f, 0.11f, 0.10f, 1f);
-        GUI.DrawTexture(footerRect, Texture2D.whiteTexture);
-        DibujarBorde(footerRect, 2f, new Color(0.38f, 0.28f, 0.18f, 1f));
-        GUI.color = Color.white;
-
-        DibujarTornillo(footerRect.x + 4, footerRect.y + 4);
-        DibujarTornillo(footerRect.xMax - 20, footerRect.y + 4);
-        DibujarTornillo(footerRect.x + 4, footerRect.yMax - 20);
-        DibujarTornillo(footerRect.xMax - 20, footerRect.yMax - 20);
-
-        string sectorActual = ObtenerNombreSectorJugador();
-        int fasesCompletadas = ObtenerFasesCompletadas();
-
-        GUIStyle infoEstilo = new GUIStyle(GUI.skin.label)
+        finally
         {
-            fontSize = 12,
-            alignment = TextAnchor.MiddleCenter,
-            richText = true
-        };
-        infoEstilo.normal.textColor = new Color(0.85f, 0.80f, 0.72f, 1f);
-
-        string colorFases = (fasesCompletadas >= 3) ? "#66FF66" : (fasesCompletadas > 0 ? "#FFCC44" : "#FF5544");
-        string textoInfo = $"<b>SECTOR ACTUAL:</b> <color=#F0D090>{sectorActual.ToUpper()}</color>    |    " +
-                           $"<b>RED ELÉCTRICA:</b> <color={colorFases}>{fasesCompletadas} / 3 FASES CON CORRIENTE</color>    |    " +
-                           $"Presiona <b>[ESC]</b> para cerrar el plano";
-
-        GUI.Label(new Rect(footerRect.x + 20, footerRect.y + 12, footerRect.width - 40, 26), textoInfo, infoEstilo);
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+        }
     }
 
     private void DibujarPlanoArquitectonico(Rect r)
@@ -1101,28 +1109,37 @@ public class EstacionPlanoInteraccion : MonoBehaviour
         Vector3 screenPos = Camera.main != null ? Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 1.6f) : Vector3.zero;
         if (screenPos.z <= 0) return;
 
-        float ancho = 240f;
-        float alto = 34f;
-        float x = screenPos.x - ancho / 2f;
-        float y = Screen.height - screenPos.y - alto;
-
-        Rect r = new Rect(x, y, ancho, alto);
-
-        // Estilo chapa metálica envejecida
-        GUI.color = new Color(0.12f, 0.10f, 0.08f, 0.92f);
-        GUI.DrawTexture(r, Texture2D.whiteTexture);
-        GUI.color = new Color(0.55f, 0.44f, 0.30f, 1f);
-        GUI.DrawTexture(new Rect(r.x, r.y, r.width, 2f), Texture2D.whiteTexture);
-        GUI.DrawTexture(new Rect(r.x, r.yMax - 2f, r.width, 2f), Texture2D.whiteTexture);
-        GUI.color = Color.white;
-
-        GUIStyle style = new GUIStyle(GUI.skin.label)
+        float s = ResponsiveGUIHelper.BeginScaledGUI(out float vw, out float vh, out Matrix4x4 prevMatrix);
+        try
         {
-            fontSize = 13,
-            fontStyle = FontStyle.Bold,
-            alignment = TextAnchor.MiddleCenter
-        };
-        style.normal.textColor = new Color(0.92f, 0.84f, 0.68f, 1f);
-        GUI.Label(r, " [E] Consultar Plano del Subsuelo", style);
+            Vector2 guiPos = ResponsiveGUIHelper.WorldScreenToVirtualGUI(screenPos, s);
+            float ancho = 240f;
+            float alto = 34f;
+            float x = Mathf.Clamp(guiPos.x - ancho / 2f, 8f, vw - ancho - 8f);
+            float y = Mathf.Clamp(guiPos.y - alto, 8f, vh - alto - 8f);
+
+            Rect r = new Rect(x, y, ancho, alto);
+
+            // Estilo chapa metálica envejecida
+            GUI.color = new Color(0.12f, 0.10f, 0.08f, 0.92f);
+            GUI.DrawTexture(r, Texture2D.whiteTexture);
+            GUI.color = new Color(0.55f, 0.44f, 0.30f, 1f);
+            GUI.DrawTexture(new Rect(r.x, r.y, r.width, 2f), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(r.x, r.yMax - 2f, r.width, 2f), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+
+            GUIStyle style = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            style.normal.textColor = new Color(0.92f, 0.84f, 0.68f, 1f);
+            GUI.Label(r, " [E] Consultar Plano del Subsuelo", style);
+        }
+        finally
+        {
+            ResponsiveGUIHelper.EndScaledGUI(prevMatrix);
+        }
     }
 }
